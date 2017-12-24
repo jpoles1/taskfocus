@@ -1,0 +1,36 @@
+body{font-family: "Lato"; margin:0; padding: 0;}
+#myKanban{overflow-x: auto; padding:20px 0;}
+.success{background: #00B961;}
+.info{background: #2A92BF;}
+.warning{background: #F4CE46;}
+.error{background: #FB7D44;}
+.kanban-board footer{
+  padding: 0 15px 15px 15px;
+}
+.kanban-item {
+  border-radius: 3px;
+}
+.kanban-add {
+  padding: 15px;
+  margin-bottom: 0;
+  border-radius: 3px;
+}
+.kanban-add:hover{
+  background: #fff;
+}
+.kanban-add-textarea{
+  font-family: Lato;
+  font-size: 16px;
+  padding: 15px;
+  width: 96%;
+  margin-left: 2%;
+  margin-top: -1px;
+  border-radius: 3px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  overflow: visible;
+}
+.kanban-add-btn{
+  margin-left: 2px;
+}
