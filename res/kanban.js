@@ -6,6 +6,15 @@ $(function(){
       click : function(el){
           console.log(el);
       },
+      dragEl : function (el, source) {
+          console.log("Drag", el, $(source).parent().attr("data-id"))
+      },
+      dropEl: function(el, target, source, sibling){
+        console.log("Moved:", el)
+        console.log("From:", source, "; To:", target)
+        console.log("Sibling", sibling)
+        console.log($(el).next())
+      },
       boards  :[
           {
               "id" : "_todo",
@@ -17,12 +26,6 @@ $(function(){
                       "title":"My Task Test",
                       "click" : function (el) {
                           alert("click");
-                      },
-                      "drag" : function (el, source) {
-                          alert("drag");
-                      },
-                      "dragend" : function (el) {
-                          alert("dragend");
                       }
                   },
                   {

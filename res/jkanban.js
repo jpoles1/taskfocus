@@ -17,10 +17,11 @@ var dragula = require('dragula');
             element : '',
             gutter : '15px',
             widthBoard : '250px',
-            responsive : '700',
+            responsive : 600,
             boards : [],
             dragEl : function (el, source) {},
             dragendEl : function (el) {},
+            dropEl : function (el, target, source, sibling) {},
             dragBoard : function (el, source) {},
             dragendBoard : function (el) {},
             click: function(el) {}
@@ -73,6 +74,12 @@ var dragula = require('dragula');
                     .on('dragend', function (el) {
                         el.classList.remove('is-moving');
                         self.options.dragendEl(el);
+                        if(typeof(el.dragendfn) === 'function')
+                            el.dragendfn(el);
+                    })
+                    .on('drop', function (el, target, source, sibling) {
+                        el.classList.remove('is-moving');
+                        self.options.dropEl(el, target, source, sibling);
                         if(typeof(el.dragendfn) === 'function')
                             el.dragendfn(el);
                     })

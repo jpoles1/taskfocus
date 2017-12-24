@@ -15,10 +15,11 @@ import (
 )
 
 var nodeIdentifier = uuid.NewV4().String()
+var servKanbanData = KanbanWall{}
 
 func init() {
 	gotenv.Load()
-	//mongoLoad()
+	mongoLoad()
 }
 func main() {
 	// Process handlebars templates
@@ -34,6 +35,13 @@ func main() {
 	//UI routing
 	router.HandleFunc("/", homePage).Methods("GET")
 	//API routing
+	router.HandleFunc("/api/exportWall", apiExportWall).Methods("GET")
+	//API sockets
+	hub := newHub()
+	go hub.run()
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
 	//Start the engines
 	portPtr := flag.String("p", "3333", "Server Port")
 	flag.Parse()
