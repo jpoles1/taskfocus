@@ -39,7 +39,7 @@ func main() {
 	//API sockets
 	hub := newHub()
 	go hub.run()
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
 	//Start the engines

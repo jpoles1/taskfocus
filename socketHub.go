@@ -5,6 +5,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"strings"
 )
@@ -52,8 +53,11 @@ func (h *Hub) run() {
 			log.Println("Socket msgtype:", msgsplit[0])
 			log.Println("Socket msg:", msgsplit[1])
 			switch msgsplit[0] {
-			case "rebroadcast":
+			case "all":
 				h.broadcastAll(msg)
+			case "init":
+				data, _ := json.Marshal(servKanbanData.BoardList[0])
+				h.broadcastAll([]byte("init ~ ~ " + string(data)))
 			}
 		}
 	}

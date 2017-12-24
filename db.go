@@ -24,7 +24,7 @@ func mongoLoad() {
 }
 func mongoPopulate() {
 	servKanbanData = KanbanWall{0, "Default", []KanbanBoard{
-		KanbanBoard{0, "", []KanbanCard{
+		KanbanBoard{0, "Todo", []KanbanCard{
 			KanbanCard{0, "Test", "", []KanbanTask{}},
 		},
 		},
