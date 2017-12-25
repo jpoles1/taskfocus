@@ -1,7 +1,8 @@
 $(function(){
   var KanbanTest
+  var initialized = 0;
+  var conn;
   function startSocket(startCallback, msgCallback){
-    var conn;
     if (window["WebSocket"]) {
         conn = new WebSocket("ws://" + document.location.host + "/ws");
         conn.onopen = function(){
@@ -14,8 +15,24 @@ $(function(){
     } else {
         var item = document.createElement("div");
         item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-        appendLog(item);
     }
+  }
+  function refreshEvents(){
+    $(".kanban-add").click(function(){
+      contObj = $(this).parent().parent()
+      boardId = contObj.attr("data-id")
+      $(this).siblings().show()
+      $(this).hide()
+    })
+    $(".kanban-add-btn").click(function(){
+      contObj = $(this).parent().parent()
+      boardID = contObj.attr("data-id")
+      taskTitle = $(this).prev().prev().val()
+      $(this).parent().children().hide()
+      $(this).siblings(".kanban-add").show()
+      $(this).siblings("textarea").val("")
+      conn.send("addCard ~ ~ "+JSON.stringify({BoardID: boardID, Title: taskTitle}))
+    })
   }
   startSocket(function(conn){
     conn.send("init ~ ~ test")
@@ -65,22 +82,6 @@ $(function(){
             }
         );
     });*/
-    $("footer").append("<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>")
-    autosize($("textarea"))
-    $("footer").children().hide()
-    $("footer").children(".kanban-add").show()
-    $(".kanban-add").click(function(){
-      contObj = $(this).parent().parent()
-      boardId = contObj.attr("data-id")
-      $(this).siblings().show()
-      $(this).hide()
-    })
-    $(".kanban-add-btn").click(function(){
-      taskTitle = $(this).prev().prev().val()
-      $(this).parent().children().hide()
-      $(this).siblings(".kanban-add").show()
-      conn.send({board: boardId, title: taskTitle})
-    })
     /*var removeBoard = document.getElementById('removeBoard');
     removeBoard.addEventListener('click',function(){
         KanbanTest.removeBoard('_done');
@@ -100,7 +101,21 @@ $(function(){
       console.log("Msg:", msgsplit[1])
       switch(msgsplit[0]){
         case "init":
-          KanbanTest.addBoards([JSON.parse(msgsplit[1])])
+          if(!initialized){
+            console.log(msgsplit[1])
+            KanbanTest.addBoards(JSON.parse(msgsplit[1]))
+            addButt = "<div class='kanban-add'>+ Add Item</div>"
+            txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
+            $("footer").append(addButt+txtarea)
+            autosize($("textarea"))
+            $("footer").children().hide()
+            $("footer").children(".kanban-add").show()
+            refreshEvents()
+            initialized = 1
+          }
+        case "addCard":
+          newCard = JSON.parse(msgsplit[1])
+          KanbanTest.addElement(newCard.BoardID, {"title": newCard.Title})
       }
     }
     else{

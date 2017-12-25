@@ -6,6 +6,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 )
@@ -56,8 +57,24 @@ func (h *Hub) run() {
 			case "all":
 				h.broadcastAll(msg)
 			case "init":
-				data, _ := json.Marshal(servKanbanData.BoardList[0])
+				fmt.Println(servKanbanData)
+				data, _ := json.Marshal(servKanbanData.BoardList)
+				fmt.Println(h.clients)
 				h.broadcastAll([]byte("init ~ ~ " + string(data)))
+			case "addCard":
+				type CardData struct {
+					BoardID string
+					Title   string
+				}
+				var cardData CardData
+				err := json.Unmarshal([]byte(msgsplit[1]), &cardData)
+				if err != nil {
+					log.Println(err)
+				}
+				fmt.Println("Card Data", cardData)
+				newCard := KanbanCard{"0", cardData.Title, "", map[string]KanbanTask{}}
+				servKanbanData.addCard(cardData.BoardID, newCard)
+				h.broadcastAll([]byte("addCard ~ ~ " + string(msgsplit[1])))
 			}
 		}
 	}

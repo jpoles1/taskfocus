@@ -146,10 +146,6 @@ var dragula = require('dragula');
                 }
                 //footer board
                 var footerBoard = document.createElement('footer');
-                var addButt = document.createElement('div');
-                addButt.classList.add('kanban-add');
-                addButt.innerHTML = "+ Add Item";
-                footerBoard.appendChild(addButt);
                 //board assembly
                 boardNode.appendChild(headerBoard);
                 boardNode.appendChild(contentBoard);

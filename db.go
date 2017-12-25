@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var mongoURI string
@@ -20,14 +22,41 @@ func mongoLoad() {
 	if err != nil {
 		log.Fatal("Failed to connect to provided MongoDB URI:\n", err)
 	}
-	mongoPopulate()
+	retreiveWall()
+}
+func retreiveWall() {
+	mongoSesh := mongoDB.Copy()
+	defer mongoSesh.Close()
+	var wallList []KanbanWall
+	mongoSesh.DB("heroku_v5zcbp27").C("walls").Find(bson.M{}).All(&wallList)
+	fmt.Println(wallList)
+	servKanbanData = wallList[0]
 }
 func mongoPopulate() {
-	servKanbanData = KanbanWall{0, "Default", []KanbanBoard{
-		KanbanBoard{0, "Todo", []KanbanCard{
-			KanbanCard{0, "Test", "", []KanbanTask{}},
-		},
-		},
-	},
+	servKanbanData = KanbanWall{"0", "Default", map[string]KanbanBoard{
+		"0": KanbanBoard{"0", "Todo", map[string]KanbanCard{
+			"0": KanbanCard{"0", "New Task", "", map[string]KanbanTask{}},
+		}},
+		"1": KanbanBoard{"1", "Done", map[string]KanbanCard{
+			"0": KanbanCard{"0", "Completed Task", "", map[string]KanbanTask{}},
+		}},
+	}}
+	createWall(servKanbanData)
+}
+
+func createWall(kw KanbanWall) {
+	mongoSesh := mongoDB.Copy()
+	defer mongoSesh.Close()
+	err := mongoSesh.DB("heroku_v5zcbp27").C("walls").Insert(kw)
+	if err != nil {
+		fmt.Println("Failure to insert poll document:\n", err)
+	}
+}
+func updateWall(wallID string, kw *KanbanWall) {
+	mongoSesh := mongoDB.Copy()
+	defer mongoSesh.Close()
+	err := mongoSesh.DB("heroku_v5zcbp27").C("walls").Update(bson.M{"id": wallID}, kw)
+	if err != nil {
+		fmt.Println("Failure to insert poll document:\n", err)
 	}
 }

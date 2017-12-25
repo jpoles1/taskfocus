@@ -1,42 +1,37 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
+	"fmt"
+	"strconv"
 )
 
 type KanbanWall struct {
-	ID        int
+	ID        string
 	Name      string
-	BoardList []KanbanBoard
+	BoardList map[string]KanbanBoard
 }
 type KanbanBoard struct {
-	ID       int          `json:"id"`
-	Name     string       `json:"title"`
-	CardList []KanbanCard `json:"item"`
+	ID       string                `json:"id"`
+	Name     string                `json:"title"`
+	CardList map[string]KanbanCard `json:"item"`
 }
 
-func (kb *KanbanBoard) addCard(kc KanbanCard) {
-	kb.CardList = append(kb.CardList, kc)
+func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) {
+	kb := kw.BoardList[boardID]
+	kc.ID = strconv.Itoa(len(kb.CardList))
+	fmt.Println(kb)
+	kb.CardList[kc.ID] = kc
+	updateWall("0", kw)
 }
 
 type KanbanCard struct {
-	ID        int    `json:"id"`
+	ID        string `json:"id"`
 	Title     string `json:"title"`
 	details   string
-	checkList []KanbanTask
-}
-
-func createCard(w http.ResponseWriter, r *http.Request) {
-	jsontxt, err := json.Marshal(servKanbanData)
-	if err != nil {
-		log.Println("Error: " + err.Error())
-		return
-	}
-	w.Write(jsontxt)
+	checkList map[string]KanbanTask
 }
 
 type KanbanTask struct {
+	ID      string
 	Details string
 }
