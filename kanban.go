@@ -16,12 +16,13 @@ type KanbanBoard struct {
 	CardList map[string]KanbanCard `json:"item"`
 }
 
-func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) {
+func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) string {
 	kb := kw.BoardList[boardID]
 	kc.ID = strconv.Itoa(len(kb.CardList))
 	fmt.Println(kb)
 	kb.CardList[kc.ID] = kc
 	updateWall("0", kw)
+	return kc.ID
 }
 
 type KanbanCard struct {

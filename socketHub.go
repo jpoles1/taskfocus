@@ -57,12 +57,11 @@ func (h *Hub) run() {
 			case "all":
 				h.broadcastAll(msg)
 			case "init":
-				fmt.Println(servKanbanData)
 				data, _ := json.Marshal(servKanbanData.BoardList)
-				fmt.Println(h.clients)
 				h.broadcastAll([]byte("init ~ ~ " + string(data)))
 			case "addCard":
 				type CardData struct {
+					ID      string
 					BoardID string
 					Title   string
 				}
@@ -73,8 +72,12 @@ func (h *Hub) run() {
 				}
 				fmt.Println("Card Data", cardData)
 				newCard := KanbanCard{"0", cardData.Title, "", map[string]KanbanTask{}}
-				servKanbanData.addCard(cardData.BoardID, newCard)
-				h.broadcastAll([]byte("addCard ~ ~ " + string(msgsplit[1])))
+				cardData.ID = servKanbanData.addCard(cardData.BoardID, newCard)
+				fmt.Println(cardData)
+				broadcast, _ := json.Marshal(cardData)
+				h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
+			case "addBoard":
+
 			}
 		}
 	}

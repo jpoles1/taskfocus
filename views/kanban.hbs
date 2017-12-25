@@ -4,4 +4,16 @@
 <center style="margin-top: 50px;">
 <h2>Tasks in Focus</h2>
 </center>
-<div id="myKanban"></div>
+<div id="myKanban">
+  <div class="kanban-container">
+    <div class="kanban-board" v-for="board in boardList" v-bind:data-id="board.id" v-bind:style="{'width': boardWidth, 'margin-left': gutter, 'margin-right': gutter}">
+      <header class="kanban-board-header">
+        <div class="kanban-title-board">\{{board.title}}</div>
+      </header>
+      <main class="kanban-drag">
+        <div class="kanban-item" v-for="card in board.item" v-bind:data-eid="card.id">\{{card.title}}</div>
+      </main>
+      <footer></footer>
+    </div>
+  </div>
+</div>

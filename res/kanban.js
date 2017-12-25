@@ -1,125 +1,82 @@
-$(function(){
-  var KanbanTest
-  var initialized = 0;
-  var conn;
-  function startSocket(startCallback, msgCallback){
-    if (window["WebSocket"]) {
-        conn = new WebSocket("ws://" + document.location.host + "/ws");
-        conn.onopen = function(){
-          startCallback(conn)
+function vueInit(boardData){
+  console.log("DT", Object.values(JSON.parse(boardData)))
+  var drake, drakeBoard
+  var app = new Vue({
+    el: '#myKanban',
+    data: {
+      boardWidth: "300px",
+      gutter: "15px",
+      responsiveWidth: 600,
+      boardList: Object.values(JSON.parse(boardData)),
+      click : function(el){
+          console.log(el);
+      },
+      dragEl : function (el, source) {
+          console.log("Drag", el, $(source).parent().attr("data-id"))
+      },
+      dropEl: function(el, target, source, sibling){
+        console.log("Moved:", el)
+        console.log("From:", source, "; To:", target)
+        console.log("Sibling", sibling)
+        console.log($(el).next())
+      }
+    },
+    methods: {
+      addCard: function(boardID, card){
+        Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+      },
+      init: function(){
+        if(window.innerWidth > this.responsive) {
+          drakeBoard = dragula([this.$el], {
+            moves: function (el, source, handle, sibling) {
+                return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-title-board'));
+            },
+            accepts: function (el, target, source, sibling) {
+                return target.classList.contains('kanban-container');
+            },
+            revertOnSpill: true,
+            direction: 'horizontal',
+          }).on('drag', function (el, source) {
+            el.classList.add('is-moving');
+            self.options.dragBoard(el, source);
+            if(typeof(el.dragfn) === 'function')
+              el.dragfn(el, source);
+          }).on('dragend', function (el) {
+            el.classList.remove('is-moving');
+            self.options.dragendBoard(el);
+            if(typeof(el.dragendfn) === 'function')
+                el.dragendfn(el);
+          });
+
+          drake = dragula($(".kanban-board").toArray(), function () {
+              revertOnSpill: true
+          }).on('drag', function (el, source) {
+            el.classList.add('is-moving');
+            self.options.dragEl(el, source);
+            if(typeof(el.dragfn) === 'function')
+              el.dragfn(el, source);
+          }).on('dragend', function (el) {
+            el.classList.remove('is-moving');
+            self.options.dragendEl(el);
+            if(typeof(el.dragendfn) === 'function')
+              el.dragendfn(el);
+          }).on('drop', function (el, target, source, sibling) {
+            el.classList.remove('is-moving');
+            self.options.dropEl(el, target, source, sibling);
+            if(typeof(el.dragendfn) === 'function')
+              el.dragendfn(el);
+          })
         }
-        conn.onclose = function (evt) {
-          console.log("Connection Lost")
-        };
-        conn.onmessage = msgCallback
-    } else {
-        var item = document.createElement("div");
-        item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
-    }
-  }
-  function refreshEvents(){
-    $(".kanban-add").click(function(){
-      contObj = $(this).parent().parent()
-      boardId = contObj.attr("data-id")
-      $(this).siblings().show()
-      $(this).hide()
-    })
-    $(".kanban-add-btn").click(function(){
-      contObj = $(this).parent().parent()
-      boardID = contObj.attr("data-id")
-      taskTitle = $(this).prev().prev().val()
-      $(this).parent().children().hide()
-      $(this).siblings(".kanban-add").show()
-      $(this).siblings("textarea").val("")
-      conn.send("addCard ~ ~ "+JSON.stringify({BoardID: boardID, Title: taskTitle}))
-    })
-  }
-  startSocket(function(conn){
-    conn.send("init ~ ~ test")
-    KanbanTest = new jKanban({
-        element : '#myKanban',
-        gutter  : '10px',
-        widthBoard : '300px',
-        click : function(el){
-            console.log(el);
-        },
-        dragEl : function (el, source) {
-            console.log("Drag", el, $(source).parent().attr("data-id"))
-        },
-        dropEl: function(el, target, source, sibling){
-          console.log("Moved:", el)
-          console.log("From:", source, "; To:", target)
-          console.log("Sibling", sibling)
-          console.log($(el).next())
-        }
-    });
-    /*var addBoardDefault = document.getElementById('addDefault');
-    addBoardDefault.addEventListener('click', function () {
-        KanbanTest.addBoards(
-            [{
-                "id" : "_default",
-                "title"  : "Kanban Default",
-                "item"  : [
-                    {
-                        "title":"Default Item",
-                    },
-                    {
-                        "title":"Default Item 2",
-                    },
-                    {
-                        "title":"Default Item 3",
-                    }
-                ]
-            }]
-        )
-    });
-    var toDoButton = document.getElementById('addToDo');
-    toDoButton.addEventListener('click',function(){
-        KanbanTest.addElement(
-            "_todo",
-            {
-                "title":"Test Add",
-            }
-        );
-    });*/
-    /*var removeBoard = document.getElementById('removeBoard');
-    removeBoard.addEventListener('click',function(){
-        KanbanTest.removeBoard('_done');
-    });
-    var removeElement = document.getElementById('removeElement');
-    removeElement.addEventListener('click',function(){
-        KanbanTest.removeElement('_test_delete');
-    });
-    var allEle = KanbanTest.getBoardElements('_todo');
-    allEle.forEach(function(item, index){
-        console.log(item);
-    })*/
-  }, function (evt) {
-    msgsplit = evt.data.split(" ~ ~ ")
-    if(msgsplit.length == 2){
-      console.log("Msgtype:", msgsplit[0])
-      console.log("Msg:", msgsplit[1])
-      switch(msgsplit[0]){
-        case "init":
-          if(!initialized){
-            console.log(msgsplit[1])
-            KanbanTest.addBoards(JSON.parse(msgsplit[1]))
-            addButt = "<div class='kanban-add'>+ Add Item</div>"
-            txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
-            $("footer").append(addButt+txtarea)
-            autosize($("textarea"))
-            $("footer").children().hide()
-            $("footer").children(".kanban-add").show()
-            refreshEvents()
-            initialized = 1
-          }
-        case "addCard":
-          newCard = JSON.parse(msgsplit[1])
-          KanbanTest.addElement(newCard.BoardID, {"title": newCard.Title})
       }
     }
-    else{
-      console.log("Socket Error: Poorly Formatted Message")
-    }
   })
-})
+  app.init()
+  console.log(drake, drakeBoard)
+  addButt = "<div class='kanban-add'>+ Add Item</div>"
+  txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
+  $("footer").append(addButt+txtarea)
+  autosize($("textarea"))
+  $("footer").children().hide()
+  $("footer").children(".kanban-add").show()
+  return app
+}
