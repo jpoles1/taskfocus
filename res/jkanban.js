@@ -38,7 +38,7 @@ var dragula = require('dragula');
             if(window.innerWidth > self.options.responsive) {
                 self.drakeBoard = self.dragula([self.container], {
                     moves: function (el, source, handle, sibling) {
-                        return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-title-board'));
+                        return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-board-title'));
                     },
                     accepts: function (el, target, source, sibling) {
                         return target.classList.contains('kanban-container');
@@ -123,7 +123,7 @@ var dragula = require('dragula');
                 // header board
                 var headerBoard = document.createElement('header');
                 headerBoard.classList.add('kanban-board-header', board.class);
-                headerBoard.innerHTML = '<div class="kanban-title-board">'+board.title+'</div>';
+                headerBoard.innerHTML = '<div class="kanban-board-title">'+board.title+'</div>';
                 //content board
                 var contentBoard = document.createElement('main');
                 contentBoard.classList.add('kanban-drag');

@@ -6,7 +6,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 )
@@ -60,38 +59,11 @@ func (h *Hub) run() {
 				data, _ := json.Marshal(servKanbanData.BoardList)
 				h.broadcastAll([]byte("init ~ ~ " + string(data)))
 			case "addCard":
-				type CardData struct {
-					ID      string
-					BoardID string
-					Title   string
-				}
-				var cardData CardData
-				err := json.Unmarshal([]byte(msgsplit[1]), &cardData)
-				if err != nil {
-					log.Println(err)
-				}
-				fmt.Println("Card Data", cardData)
-				newCard := KanbanCard{"0", cardData.Title, "", map[string]KanbanTask{}}
-				cardData.ID = servKanbanData.addCard(cardData.BoardID, newCard)
-				fmt.Println(cardData)
-				broadcast, _ := json.Marshal(cardData)
-				h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
+				socketAddCard(msgsplit[1], h)
 			case "addBoard":
-				type BoardData struct {
-					ID    string
-					Title string
-				}
-				var boardData BoardData
-				err := json.Unmarshal([]byte(msgsplit[1]), &boardData)
-				if err != nil {
-					log.Println(err)
-				}
-				fmt.Println("Board Data", boardData)
-				newBoard := KanbanBoard{"0", boardData.Title, map[string]KanbanCard{}}
-				boardData.ID = servKanbanData.addBoard(newBoard)
-				fmt.Println(boardData)
-				broadcast, _ := json.Marshal(boardData)
-				h.broadcastAll([]byte("addBoard ~ ~ " + string(broadcast)))
+				socketAddBoard(msgsplit[1], h)
+			case "changeBoardTitle":
+				socketChangeBoardTitle(msgsplit[1], h)
 			}
 		}
 	}

@@ -4,6 +4,9 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .info{background: #2A92BF;}
 .warning{background: #F4CE46;}
 .error{background: #FB7D44;}
+.kanban-board header{
+  border-bottom: .8px solid #aaa;
+}
 .kanban-board footer{
   padding: 0 15px 15px 15px;
 }

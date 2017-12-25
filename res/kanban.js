@@ -1,4 +1,4 @@
-vueInit = function(conn, boardData){
+vueInit = function(conn, boardData) {
   var drake, drakeBoard
   var app = new Vue({
     el: '#myKanban',
@@ -8,13 +8,13 @@ vueInit = function(conn, boardData){
       gutter: 15,
       responsiveWidth: 600,
       boardList: Object.values(JSON.parse(boardData)),
-      click : function(el){
-          console.log(el);
+      click: function(el) {
+        console.log(el);
       },
-      dragEl : function (el, source) {
-          console.log("Drag", el, $(source).parent().attr("data-id"))
+      dragEl: function(el, source) {
+        console.log("Drag", el, $(source).parent().attr("data-id"))
       },
-      dropEl: function(el, target, source, sibling){
+      dropEl: function(el, target, source, sibling) {
         console.log("Moved:", el)
         console.log("From:", source, "; To:", target)
         console.log("Sibling", sibling)
@@ -22,94 +22,137 @@ vueInit = function(conn, boardData){
       }
     },
     methods: {
-      addCard: function(boardID, card){
+      addCard: function(boardID, card) {
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
       },
-      addBoard: function(boardID, name){
-        this.boardList.push({id: boardID, title: name, item: {}})
+      addBoard: function(boardID, name) {
+        this.boardList.push({
+          id: boardID,
+          title: name,
+          item: {}
+        })
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
       },
-      calcWidth: function(){
-        this.wallWidth = (this.boardWidth + 2*this.gutter)*(this.boardList.length+1)
+      changeBoardTitle: function(boardID, name) {
+        //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+        this.boardList[boardID].title = name
+        this.calcWidth()
+        setTimeout(this.refreshEvents, 200)
+      },
+      calcWidth: function() {
+        this.wallWidth = (this.boardWidth + 2 * this.gutter) * (this.boardList.length + 1)
         console.log(this.wallWidth)
       },
-      refreshEvents: function(){
+      refreshEvents: function() {
         addButt = "<div class='kanban-add'>+ Add Item</div>"
         txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
-        $("footer").html(addButt+txtarea)
+        $("footer").html(addButt + txtarea)
         autosize($("textarea"))
         $("footer").children().hide()
         $("footer").children(".kanban-add").show()
-        $(".kanban-add").click(function(){
+        $(".kanban-add").click(function() {
           contObj = $(this).parent().parent()
           boardId = contObj.attr("data-id")
           $(this).siblings().show()
           $(this).hide()
         })
-        $(".kanban-add-btn").click(function(){
+        $(".kanban-add-btn").click(function() {
           contObj = $(this).parent().parent()
           boardID = contObj.attr("data-id")
           taskTitle = $(this).prev().prev().val()
           $(this).parent().children().hide()
           $(this).siblings(".kanban-add").show()
           $(this).siblings("textarea").val("")
-          conn.send("addCard ~ ~ "+JSON.stringify({BoardID: boardID, Title: taskTitle}))
+          conn.send("addCard ~ ~ " + JSON.stringify({
+            BoardID: boardID,
+            Title: taskTitle
+          }))
         })
-        $(".kanban-addboard-btn").click(function(){
+        $(".kanban-addboard-btn").click(function() {
           $(this).parent().children().show()
           $(this).hide()
         })
-        $(".kanban-addboard-form button").click(function(){
+        $(".kanban-addboard-form button").click(function() {
+          title = $(this).siblings("input").first().val()
+          if ($.trim(title) == "") {
+            return
+          }
           console.log("Adding new board")
           $(this).parent().parent().children().show()
           $(this).parent().hide()
-          conn.send("addBoard ~ ~ "+JSON.stringify({Title: $(this).siblings("input").first().val()}))
+          conn.send("addBoard ~ ~ " + JSON.stringify({
+            Title: title
+          }))
         })
-        $(".kanban-addboard-form .cancel").click(function(){
+        $(".kanban-addboard-form .cancel").click(function() {
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+        })
+        $(".kanban-board-title").click(function() {
+          $(this).parent().children().show()
+          $(this).hide()
+        })
+        $(".kanban-board-title-form button").click(function() {
+          title = $(this).siblings("input").first().val()
+          if ($.trim(title) == "") {
+            return
+          }
+          contObj = $(this).parents().eq(2)
+          console.log(contObj)
+          boardID = contObj.attr("data-id")
+          console.log("Changing title")
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+          conn.send("changeBoardTitle ~ ~ " + JSON.stringify({
+            BoardID: boardID,
+            Title: title
+          }))
+        })
+        $(".kanban-board-title-form .cancel").click(function() {
           $(this).parent().parent().children().show()
           $(this).parent().hide()
         })
       },
-      init: function(){
-        if(window.innerWidth > this.responsive) {
+      init: function() {
+        if (window.innerWidth > this.responsive) {
           drakeBoard = dragula([this.$el], {
-            moves: function (el, source, handle, sibling) {
-                return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-title-board'));
+            moves: function(el, source, handle, sibling) {
+              return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-board-title'));
             },
-            accepts: function (el, target, source, sibling) {
-                return target.classList.contains('kanban-container');
+            accepts: function(el, target, source, sibling) {
+              return target.classList.contains('kanban-container');
             },
             revertOnSpill: true,
             direction: 'horizontal',
-          }).on('drag', function (el, source) {
+          }).on('drag', function(el, source) {
             el.classList.add('is-moving');
             self.options.dragBoard(el, source);
-            if(typeof(el.dragfn) === 'function')
+            if (typeof(el.dragfn) === 'function')
               el.dragfn(el, source);
-          }).on('dragend', function (el) {
+          }).on('dragend', function(el) {
             el.classList.remove('is-moving');
             self.options.dragendBoard(el);
-            if(typeof(el.dragendfn) === 'function')
-                el.dragendfn(el);
+            if (typeof(el.dragendfn) === 'function')
+              el.dragendfn(el);
           });
 
-          drake = dragula($(".kanban-board").toArray(), function () {
-              revertOnSpill: true
-          }).on('drag', function (el, source) {
+          drake = dragula($(".kanban-board").toArray(), function() {
+            revertOnSpill: true
+          }).on('drag', function(el, source) {
             el.classList.add('is-moving');
             self.options.dragEl(el, source);
-            if(typeof(el.dragfn) === 'function')
+            if (typeof(el.dragfn) === 'function')
               el.dragfn(el, source);
-          }).on('dragend', function (el) {
+          }).on('dragend', function(el) {
             el.classList.remove('is-moving');
             self.options.dragendEl(el);
-            if(typeof(el.dragendfn) === 'function')
+            if (typeof(el.dragendfn) === 'function')
               el.dragendfn(el);
-          }).on('drop', function (el, target, source, sibling) {
+          }).on('drop', function(el, target, source, sibling) {
             el.classList.remove('is-moving');
             self.options.dropEl(el, target, source, sibling);
-            if(typeof(el.dragendfn) === 'function')
+            if (typeof(el.dragendfn) === 'function')
               el.dragendfn(el);
           })
         }

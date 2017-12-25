@@ -8,7 +8,13 @@
   <div class="kanban-container" v-bind:style="{'width': wallWidth+'px'}">
     <div class="kanban-board" v-for="board in boardList" v-bind:data-id="board.id" v-bind:style="{'width': boardWidth+'px', 'margin-left': gutter+'px', 'margin-right': gutter+'px'}">
       <header class="kanban-board-header">
-        <div class="kanban-title-board">\{{board.title}}</div>
+        <div class="kanban-board-title">\{{board.title}}</div>
+        <div class='kanban-board-title-form' style="display: none">
+          <input type="text" v-bind:value="board.title"></input>
+          <br>
+          <button type="submit">Save</button>
+          <a class="cancel" style="font-size: 24px; float: right;">X</a>
+        </div>
       </header>
       <main class="kanban-drag">
         <div class="kanban-item" v-for="card in board.item" v-bind:data-eid="card.id">\{{card.title}}</div>

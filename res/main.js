@@ -42,6 +42,12 @@ $(function(){
         console.log(app.boardList)
         app.addBoard(newBoard.BoardID, newBoard.Title)
       }
+      if(msgsplit[0] == "changeBoardTitle"){
+        newBoard = JSON.parse(msgsplit[1])
+        console.log("Change Title:", newBoard)
+        console.log(app.boardList)
+        app.changeBoardTitle(newBoard.BoardID, newBoard.Title)
+      }
     }
     else{
       console.log("Socket Error: Poorly Formatted Message")
