@@ -37,6 +37,11 @@ func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) string {
 	updateWall("0", kw)
 	return kc.ID
 }
+func (kw *KanbanWall) moveCard(cardID string, originBoardID string, destBoardID string) {
+	kw.BoardList[destBoardID].CardList[cardID] = kw.BoardList[originBoardID].CardList[cardID]
+	delete(kw.BoardList[originBoardID].CardList, cardID)
+	updateWall("0", kw)
+}
 
 type KanbanCard struct {
 	ID        string `json:"id"`

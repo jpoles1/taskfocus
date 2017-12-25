@@ -28,6 +28,9 @@ vueInit = function(conn, boardData) {
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
       },
+      moveCardBoard: function(boardID, cardID) {
+        //Change Card from one board to another
+      },
       calcWidth: function() {
         this.wallWidth = (this.boardWidth + 2 * this.gutter) * (this.boardList.length + 1)
         console.log(this.wallWidth)
@@ -140,6 +143,13 @@ vueInit = function(conn, boardData) {
           console.log("From:", source, "; To:", target)
           console.log("Sibling", sibling)
           console.log($(el).next())
+          cardID = $(el).attr("data-eid")
+          console.log(cardID)
+          conn.send("moveCard ~ ~ " + JSON.stringify({
+            CardID: cardID,
+            OriginBoardID: $(source).parent().attr("data-id"),
+            DestBoardID: $(target).parent().attr("data-id")
+          }))
         });
       }
     }
