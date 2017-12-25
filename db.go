@@ -30,15 +30,16 @@ func retreiveWall() {
 	var wallList []KanbanWall
 	mongoSesh.DB("heroku_v5zcbp27").C("walls").Find(bson.M{}).All(&wallList)
 	fmt.Println(wallList)
+	if len(wallList) < 1 {
+		mongoPopulate()
+		return
+	}
 	servKanbanData = wallList[0]
 }
 func mongoPopulate() {
 	servKanbanData = KanbanWall{"0", "Default", map[string]KanbanBoard{
 		"0": KanbanBoard{"0", "Todo", map[string]KanbanCard{
-			"0": KanbanCard{"0", "New Task", "", map[string]KanbanTask{}},
-		}},
-		"1": KanbanBoard{"1", "Done", map[string]KanbanCard{
-			"0": KanbanCard{"0", "Completed Task", "", map[string]KanbanTask{}},
+		//"0": KanbanCard{"0", "New Task", "", map[string]KanbanTask{}},
 		}},
 	}}
 	createWall(servKanbanData)

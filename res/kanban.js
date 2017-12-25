@@ -1,11 +1,11 @@
-function vueInit(boardData){
-  console.log("DT", Object.values(JSON.parse(boardData)))
+vueInit = function(conn, boardData){
   var drake, drakeBoard
   var app = new Vue({
     el: '#myKanban',
     data: {
-      boardWidth: "300px",
-      gutter: "15px",
+      wallWidth: 800,
+      boardWidth: 300,
+      gutter: 15,
       responsiveWidth: 600,
       boardList: Object.values(JSON.parse(boardData)),
       click : function(el){
@@ -24,6 +24,52 @@ function vueInit(boardData){
     methods: {
       addCard: function(boardID, card){
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+      },
+      addBoard: function(boardID, name){
+        this.boardList.push({id: boardID, title: name, item: {}})
+        this.calcWidth()
+        setTimeout(this.refreshEvents, 200)
+      },
+      calcWidth: function(){
+        this.wallWidth = (this.boardWidth + 2*this.gutter)*(this.boardList.length+1)
+        console.log(this.wallWidth)
+      },
+      refreshEvents: function(){
+        addButt = "<div class='kanban-add'>+ Add Item</div>"
+        txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
+        $("footer").html(addButt+txtarea)
+        autosize($("textarea"))
+        $("footer").children().hide()
+        $("footer").children(".kanban-add").show()
+        $(".kanban-add").click(function(){
+          contObj = $(this).parent().parent()
+          boardId = contObj.attr("data-id")
+          $(this).siblings().show()
+          $(this).hide()
+        })
+        $(".kanban-add-btn").click(function(){
+          contObj = $(this).parent().parent()
+          boardID = contObj.attr("data-id")
+          taskTitle = $(this).prev().prev().val()
+          $(this).parent().children().hide()
+          $(this).siblings(".kanban-add").show()
+          $(this).siblings("textarea").val("")
+          conn.send("addCard ~ ~ "+JSON.stringify({BoardID: boardID, Title: taskTitle}))
+        })
+        $(".kanban-addboard-btn").click(function(){
+          $(this).parent().children().show()
+          $(this).hide()
+        })
+        $(".kanban-addboard-form button").click(function(){
+          console.log("Adding new board")
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+          conn.send("addBoard ~ ~ "+JSON.stringify({Title: $(this).siblings("input").first().val()}))
+        })
+        $(".kanban-addboard-form .cancel").click(function(){
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+        })
       },
       init: function(){
         if(window.innerWidth > this.responsive) {
@@ -71,12 +117,6 @@ function vueInit(boardData){
     }
   })
   app.init()
-  console.log(drake, drakeBoard)
-  addButt = "<div class='kanban-add'>+ Add Item</div>"
-  txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
-  $("footer").append(addButt+txtarea)
-  autosize($("textarea"))
-  $("footer").children().hide()
-  $("footer").children(".kanban-add").show()
+  app.calcWidth()
   return app
 }

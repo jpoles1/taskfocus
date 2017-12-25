@@ -16,6 +16,13 @@ type KanbanBoard struct {
 	CardList map[string]KanbanCard `json:"item"`
 }
 
+func (kw *KanbanWall) addBoard(kb KanbanBoard) string {
+	kb.ID = strconv.Itoa(len(kw.BoardList))
+	fmt.Println(kb)
+	kw.BoardList[kb.ID] = kb
+	updateWall("0", kw)
+	return kb.ID
+}
 func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) string {
 	kb := kw.BoardList[boardID]
 	kc.ID = strconv.Itoa(len(kb.CardList))

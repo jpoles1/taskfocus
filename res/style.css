@@ -1,5 +1,5 @@
 body{font-family: "Lato"; margin:0; padding: 0;}
-#myKanban{overflow-x: auto; padding:20px 0;}
+#myKanban{padding:20px 0;}
 .success{background: #00B961;}
 .info{background: #2A92BF;}
 .warning{background: #F4CE46;}

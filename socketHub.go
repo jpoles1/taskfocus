@@ -77,7 +77,21 @@ func (h *Hub) run() {
 				broadcast, _ := json.Marshal(cardData)
 				h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
 			case "addBoard":
-
+				type BoardData struct {
+					ID    string
+					Title string
+				}
+				var boardData BoardData
+				err := json.Unmarshal([]byte(msgsplit[1]), &boardData)
+				if err != nil {
+					log.Println(err)
+				}
+				fmt.Println("Board Data", boardData)
+				newBoard := KanbanBoard{"0", boardData.Title, map[string]KanbanCard{}}
+				boardData.ID = servKanbanData.addBoard(newBoard)
+				fmt.Println(boardData)
+				broadcast, _ := json.Marshal(boardData)
+				h.broadcastAll([]byte("addBoard ~ ~ " + string(broadcast)))
 			}
 		}
 	}

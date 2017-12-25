@@ -17,27 +17,9 @@ $(function(){
         item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
     }
   }
-  function refreshEvents(){
-    $(".kanban-add").click(function(){
-      contObj = $(this).parent().parent()
-      boardId = contObj.attr("data-id")
-      $(this).siblings().show()
-      $(this).hide()
-    })
-    $(".kanban-add-btn").click(function(){
-      contObj = $(this).parent().parent()
-      boardID = contObj.attr("data-id")
-      taskTitle = $(this).prev().prev().val()
-      $(this).parent().children().hide()
-      $(this).siblings(".kanban-add").show()
-      $(this).siblings("textarea").val("")
-      conn.send("addCard ~ ~ "+JSON.stringify({BoardID: boardID, Title: taskTitle}))
-    })
-  }
   var app;
   startSocket(function(conn){
     conn.send("init ~ ~ test")
-    $("#myKanban").append("<div class='kanban-board'><header class='kanban-board-header'><button class='kanban-addboard-btn'>+ Add Board</button></header>")
   }, function (evt) {
     msgsplit = evt.data.split(" ~ ~ ")
     if(msgsplit.length == 2){
@@ -45,17 +27,20 @@ $(function(){
       console.log("Msg:", msgsplit[1])
       if(msgsplit[0] == "init"){
         if(!initialized){
-          app = vueInit(msgsplit[1])
-          refreshEvents()
+          app = vueInit(conn, msgsplit[1])
+          app.refreshEvents()
           initialized = 1
         }
       }
       if(msgsplit[0] == "addCard"){
         newCard = JSON.parse(msgsplit[1])
-        console.log("CRD:", newCard)
-        console.log(app.boardList)
         app.addCard(newCard.BoardID, {"id": newCard.ID, "title": newCard.Title})
-        console.log(app.boardList[parseInt(newCard.BoardID)])
+      }
+      if(msgsplit[0] == "addBoard"){
+        newBoard = JSON.parse(msgsplit[1])
+        console.log("Brd:", newBoard)
+        console.log(app.boardList)
+        app.addBoard(newBoard.BoardID, newBoard.Title)
       }
     }
     else{

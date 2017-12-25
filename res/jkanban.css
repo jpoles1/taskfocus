@@ -27,8 +27,8 @@
       margin: 0;
       padding: 0; }
   .kanban-board .kanban-drag {
-    min-height: 100px;
-    padding: 20px; }
+    padding: 20px;
+  }
   .kanban-board:after {
     clear: both;
     display: block;
