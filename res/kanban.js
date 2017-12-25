@@ -6,20 +6,8 @@ vueInit = function(conn, boardData) {
       wallWidth: 800,
       boardWidth: 300,
       gutter: 15,
-      responsiveWidth: 600,
-      boardList: Object.values(JSON.parse(boardData)),
-      click: function(el) {
-        console.log(el);
-      },
-      dragEl: function(el, source) {
-        console.log("Drag", el, $(source).parent().attr("data-id"))
-      },
-      dropEl: function(el, target, source, sibling) {
-        console.log("Moved:", el)
-        console.log("From:", source, "; To:", target)
-        console.log("Sibling", sibling)
-        console.log($(el).next())
-      }
+      responsiveWidth: 400,
+      boardList: Object.values(JSON.parse(boardData))
     },
     methods: {
       addCard: function(boardID, card) {
@@ -45,20 +33,27 @@ vueInit = function(conn, boardData) {
         console.log(this.wallWidth)
       },
       refreshEvents: function() {
-        addButt = "<div class='kanban-add'>+ Add Item</div>"
-        txtarea = "<textarea class='kanban-add-textarea'></textarea><br><button class='kanban-add-btn'>Add</button>"
-        $("footer").html(addButt + txtarea)
         autosize($("textarea"))
-        $("footer").children().hide()
-        $("footer").children(".kanban-add").show()
+        $(".cancel").click(function() {
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+          $(this).siblings("input,textarea").each(function() {
+            if ($(this).attr("defaultvalue")) {
+              $(this).val($(this).attr("defaultvalue"))
+            } else {
+              $(this).val("")
+            }
+          })
+        })
         $(".kanban-add").click(function() {
           contObj = $(this).parent().parent()
           boardId = contObj.attr("data-id")
           $(this).siblings().show()
           $(this).hide()
+          $(this).siblings("div").children("textarea").focus()
         })
         $(".kanban-add-btn").click(function() {
-          contObj = $(this).parent().parent()
+          contObj = $(this).parents().eq(2)
           boardID = contObj.attr("data-id")
           taskTitle = $(this).prev().prev().val()
           $(this).parent().children().hide()
@@ -79,15 +74,10 @@ vueInit = function(conn, boardData) {
             return
           }
           console.log("Adding new board")
-          $(this).parent().parent().children().show()
-          $(this).parent().hide()
           conn.send("addBoard ~ ~ " + JSON.stringify({
             Title: title
           }))
-        })
-        $(".kanban-addboard-form .cancel").click(function() {
-          $(this).parent().parent().children().show()
-          $(this).parent().hide()
+          $(this).siblings(".cancel").click()
         })
         $(".kanban-board-title").click(function() {
           $(this).parent().children().show()
@@ -109,53 +99,48 @@ vueInit = function(conn, boardData) {
             Title: title
           }))
         })
-        $(".kanban-board-title-form .cancel").click(function() {
-          $(this).parent().parent().children().show()
-          $(this).parent().hide()
-        })
       },
       init: function() {
-        if (window.innerWidth > this.responsive) {
-          drakeBoard = dragula([this.$el], {
-            moves: function(el, source, handle, sibling) {
-              return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-board-title'));
-            },
-            accepts: function(el, target, source, sibling) {
-              return target.classList.contains('kanban-container');
-            },
-            revertOnSpill: true,
-            direction: 'horizontal',
-          }).on('drag', function(el, source) {
-            el.classList.add('is-moving');
-            self.options.dragBoard(el, source);
-            if (typeof(el.dragfn) === 'function')
-              el.dragfn(el, source);
-          }).on('dragend', function(el) {
-            el.classList.remove('is-moving');
-            self.options.dragendBoard(el);
-            if (typeof(el.dragendfn) === 'function')
-              el.dragendfn(el);
-          });
+        console.log("init")
+        console.log(this.$el)
+        dragula([this.$el], {
+          moves: function(el, source, handle, sibling) {
+            return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-board-title'));
+          },
+          accepts: function(el, target, source, sibling) {
+            return target.classList.contains('kanban-container');
+          },
+          revertOnSpill: true,
+          direction: 'horizontal',
+        }).on('drag', function(el, source) {
+          el.classList.add('is-moving');
+          this.dragBoard(el, source);
+          if (typeof(el.dragfn) === 'function')
+            el.dragfn(el, source);
+        }).on('dragend', function(el, source) {
+          el.classList.remove('is-moving');
+        }).on('drop', function(el, target, source, sibling) {
+          el.classList.remove('is-moving');
+          console.log("Moved:", el)
+          console.log("From:", source, "; To:", target)
+          console.log("Sibling", sibling)
+          console.log($(el).next())
+        });
 
-          drake = dragula($(".kanban-board").toArray(), function() {
-            revertOnSpill: true
-          }).on('drag', function(el, source) {
-            el.classList.add('is-moving');
-            self.options.dragEl(el, source);
-            if (typeof(el.dragfn) === 'function')
-              el.dragfn(el, source);
-          }).on('dragend', function(el) {
-            el.classList.remove('is-moving');
-            self.options.dragendEl(el);
-            if (typeof(el.dragendfn) === 'function')
-              el.dragendfn(el);
-          }).on('drop', function(el, target, source, sibling) {
-            el.classList.remove('is-moving');
-            self.options.dropEl(el, target, source, sibling);
-            if (typeof(el.dragendfn) === 'function')
-              el.dragendfn(el);
-          })
-        }
+        drake = dragula($(".kanban-board main").toArray(), function() {
+          revertOnSpill: true
+        }).on('drag', function(el, source) {
+          el.classList.add('is-moving');
+          console.log("Drag", el, $(source).parent().attr("data-id"))
+        }).on('dragend', function(el, source) {
+          el.classList.remove('is-moving');
+        }).on('drop', function(el, target, source, sibling) {
+          el.classList.remove('is-moving');
+          console.log("Moved:", el)
+          console.log("From:", source, "; To:", target)
+          console.log("Sibling", sibling)
+          console.log($(el).next())
+        });
       }
     }
   })
