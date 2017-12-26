@@ -35,6 +35,10 @@ func retreiveWall() {
 		return
 	}
 	servKanbanData = wallList[0]
+	servKanbanData.cardCt = 0
+	for _, board := range servKanbanData.BoardList {
+		servKanbanData.cardCt += len(board.CardList)
+	}
 }
 func mongoPopulate() {
 	servKanbanData = KanbanWall{"0", "Default", 0, map[string]KanbanBoard{

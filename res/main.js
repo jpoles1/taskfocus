@@ -59,6 +59,7 @@ $(function() {
         if (moveData.OriginBoardID != moveData.DestBoardID) {
           app.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
         }
+        app.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
       }
     } else {
       console.log("Socket Error: Poorly Formatted Message")

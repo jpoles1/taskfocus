@@ -1,6 +1,7 @@
 vueInit = function(conn, boardData) {
   var drake, drakeBoard
-  console.log(Object.values(JSON.parse(boardData)))
+  var boardData = Object.values(JSON.parse(boardData))
+  console.log("Populating Data:", boardData)
   var app = new Vue({
     el: '#myKanban',
     data: {
@@ -8,11 +9,18 @@ vueInit = function(conn, boardData) {
       boardWidth: 300,
       gutter: 15,
       responsiveWidth: 400,
-      boardList: Object.values(JSON.parse(boardData))
+      boardList: boardData
     },
     methods: {
       addCard: function(boardID, card) {
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+      },
+      getCardArray: function(boardID) {
+        cardArray = Object.values(this.boardList[boardID]["item"])
+        cardArray.sort(function(a, b) {
+          return a.order - b.order
+        })
+        return cardArray
       },
       addBoard: function(boardID, name) {
         this.boardList.push({
@@ -35,12 +43,28 @@ vueInit = function(conn, boardData) {
         delete this.boardList[parseInt(originBoardID)].item[cardID]
         //Change Card from one board to another
       },
+      moveCardOrder: function(cardID, destBoardID, orderBefore, orderAfter) {
+        var bl = this.boardList
+        $.each(bl[destBoardID].item, function(cID, oldCard) {
+          if (cID != cardID) {
+            if (oldCard.order >= orderAfter) {
+              oldCard.order = oldCard.order + 1
+            }
+            bl[destBoardID].item[cID] = oldCard
+          }
+        })
+        oldCard = bl[destBoardID].item[cardID]
+        oldCard.order = orderBefore + 1
+        bl[destBoardID].item[cardID] = oldCard
+        this.boardList = bl
+      },
       calcWidth: function() {
         this.wallWidth = (this.boardWidth + 2 * this.gutter) * (this.boardList.length + 1)
       },
       refreshEvents: function() {
         autosize($("textarea"))
-        $(".cancel").click(function() {
+        $(".cancel").off("click").click(function() {
+          console.log("cancel")
           $(this).parent().parent().children().show()
           $(this).parent().hide()
           $(this).siblings("input,textarea").each(function() {
@@ -51,14 +75,14 @@ vueInit = function(conn, boardData) {
             }
           })
         })
-        $(".kanban-add").click(function() {
+        $(".kanban-add").off("click").click(function() {
           contObj = $(this).parent().parent()
           boardId = contObj.attr("data-id")
           $(this).siblings().show()
           $(this).hide()
           $(this).siblings("div").children("textarea").focus()
         })
-        $(".kanban-add-btn").click(function() {
+        $(".kanban-add-btn").off("click").click(function() {
           contObj = $(this).parents().eq(2)
           boardID = contObj.attr("data-id")
           taskTitle = $(this).prev().prev().val()
@@ -70,11 +94,11 @@ vueInit = function(conn, boardData) {
             Title: taskTitle
           }))
         })
-        $(".kanban-addboard-btn").click(function() {
+        $(".kanban-addboard-btn").off("click").click(function() {
           $(this).parent().children().show()
           $(this).hide()
         })
-        $(".kanban-addboard-form button").click(function() {
+        $(".kanban-addboard-form button").off("click").click(function() {
           title = $(this).siblings("input").first().val()
           if ($.trim(title) == "") {
             return
@@ -85,11 +109,11 @@ vueInit = function(conn, boardData) {
           }))
           $(this).siblings(".cancel").click()
         })
-        $(".kanban-board-title").click(function() {
+        $(".kanban-board-title").off("click").click(function() {
           $(this).parent().children().show()
           $(this).hide()
         })
-        $(".kanban-board-title-form button").click(function() {
+        $(".kanban-board-title-form button").off("click").click(function() {
           title = $(this).siblings("input").first().val()
           if ($.trim(title) == "") {
             return
@@ -113,20 +137,27 @@ vueInit = function(conn, boardData) {
         })
         drake.on('drop', function(el, target, source, sibling) {
           el.classList.remove('is-moving');
-          console.log("Moved:", el)
+          /*console.log("Moved:", el)
           console.log("From:", source, "; To:", target)
-          console.log("Sibling", sibling)
-          console.log($(el).next())
+          console.log("Siblings", $(el).prev().attr("data-order"), $(el).next().attr("data-order"))*/
           cardID = $(el).attr("data-eid")
-          console.log(cardID)
           sendObj = {
             CardID: cardID,
             OriginBoardID: $(source).parent().attr("data-id"),
-            DestBoardID: $(target).parent().attr("data-id")
+            DestBoardID: $(target).parent().attr("data-id"),
+            OrderBefore: parseInt($(el).prev().attr("data-order")),
+            OrderAfter: parseInt($(el).next().attr("data-order"))
           }
-          if (typeof sendObj.OriginBoardID !== 'undefined' & typeof sendObj.DestBoardID !== 'undefined') {
-            conn.send("moveCard ~ ~ " + JSON.stringify(sendObj))
+          console.log(sendObj)
+          if (isNaN(sendObj.OrderAfter)) {
+            sendObj.OrderBefore += 1
+            sendObj.OrderAfter = sendObj.OrderBefore + 2
           }
+          if (isNaN(sendObj.OrderBefore)) {
+            sendObj.OrderBefore = 0
+            sendObj.OrderAfter = 0
+          }
+          conn.send("moveCard ~ ~ " + JSON.stringify(sendObj))
           drake.cancel(true);
         });
       },

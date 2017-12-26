@@ -64,6 +64,8 @@ func socketMoveCard(data string, h *Hub) {
 		CardID        string
 		OriginBoardID string
 		DestBoardID   string
+		OrderBefore   int
+		OrderAfter    int
 	}
 	var moveData MoveData
 	err := json.Unmarshal([]byte(data), &moveData)
@@ -72,7 +74,8 @@ func socketMoveCard(data string, h *Hub) {
 	}
 	fmt.Println("Move Card:", moveData)
 	if moveData.OriginBoardID != moveData.DestBoardID {
-		servKanbanData.moveCard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
+		servKanbanData.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
 	}
+	servKanbanData.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
 	h.broadcastAll([]byte("moveCard ~ ~ " + data))
 }

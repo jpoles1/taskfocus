@@ -42,9 +42,23 @@ func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) (string, int) {
 	updateWall("0", kw)
 	return kc.ID, kc.Order
 }
-func (kw *KanbanWall) moveCard(cardID string, originBoardID string, destBoardID string) {
+func (kw *KanbanWall) moveCardBoard(cardID string, originBoardID string, destBoardID string) {
 	kw.BoardList[destBoardID].CardList[cardID] = kw.BoardList[originBoardID].CardList[cardID]
 	delete(kw.BoardList[originBoardID].CardList, cardID)
+	updateWall("0", kw)
+}
+func (kw *KanbanWall) moveCardOrder(cardID string, destBoardID string, orderBefore int, orderAfter int) {
+	fmt.Println("OBefore", orderBefore)
+	for cID, oldCard := range kw.BoardList[destBoardID].CardList {
+		if oldCard.Order >= orderAfter {
+			oldCard.Order = oldCard.Order + 1
+		}
+		kw.BoardList[destBoardID].CardList[cID] = oldCard
+	}
+	oldCard := kw.BoardList[destBoardID].CardList[cardID]
+	oldCard.Order = orderBefore
+	kw.BoardList[destBoardID].CardList[cardID] = oldCard
+	fmt.Println(kw.BoardList[destBoardID])
 	updateWall("0", kw)
 }
 
