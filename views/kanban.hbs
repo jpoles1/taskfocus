@@ -20,7 +20,13 @@
         <div class="kanban-item" v-for="card in getCardArray(board.id)" :data-eid="card.id" :data-order="card.order">
           <!--\{{card.id}} - \{{card.order}}
           <br>-->
-          \{{card.title}}
+          <div class="kanban-card-title">\{{card.title}}</div>
+          <div class='kanban-card-title-form' style="display: none">
+            <textarea class="kanban-card-title-textarea" :value="card.title" :defaultvalue="card.title"></textarea>
+            <br>
+            <button type="submit">Save</button>
+            <a class="cancel" style="font-size: 24px; float: right;">X</a>
+          </div>
         </div>
       </main>
       <footer>

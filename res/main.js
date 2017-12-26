@@ -29,7 +29,6 @@ $(function() {
       if (msgsplit[0] == "init") {
         if (!initialized) {
           app = vueInit(conn, msgsplit[1])
-          app.refreshEvents()
           initialized = 1
         }
       }
@@ -49,9 +48,14 @@ $(function() {
       }
       if (msgsplit[0] == "changeBoardTitle") {
         newBoard = JSON.parse(msgsplit[1])
-        console.log("Change Title:", newBoard)
+        console.log("Change Board Title:", newBoard)
         console.log(app.boardList)
         app.changeBoardTitle(newBoard.BoardID, newBoard.Title)
+      }
+      if (msgsplit[0] == "changeCardTitle") {
+        newCard = JSON.parse(msgsplit[1])
+        console.log("Change Card Title:", newCard)
+        app.changeCardTitle(newCard.BoardID, newCard.CardID, newCard.Title)
       }
       if (msgsplit[0] == "moveCard") {
         moveData = JSON.parse(msgsplit[1])
@@ -60,6 +64,7 @@ $(function() {
           app.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
         }
         app.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
+        setTimeout(app.refreshEvents, 200)
       }
     } else {
       console.log("Socket Error: Poorly Formatted Message")

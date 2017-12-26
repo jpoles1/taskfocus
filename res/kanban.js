@@ -31,10 +31,15 @@ vueInit = function(conn, boardData) {
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
       },
-      changeBoardTitle: function(boardID, name) {
+      changeBoardTitle: function(boardID, title) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
-        this.boardList[boardID].title = name
+        this.boardList[boardID].title = title
         this.calcWidth()
+        setTimeout(this.refreshEvents, 200)
+      },
+      changeCardTitle: function(boardID, cardID, title) {
+        //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+        this.boardList[boardID].item[cardID].title = title
         setTimeout(this.refreshEvents, 200)
       },
       moveCardBoard: function(cardID, originBoardID, destBoardID) {
@@ -129,11 +134,36 @@ vueInit = function(conn, boardData) {
             Title: title
           }))
         })
+        $(".kanban-card-title").off("click").click(function() {
+
+          $(this).parent().children().show()
+          $(this).hide()
+          autosize.update($("textarea"))
+        })
+        $(".kanban-card-title-form button").off("click").click(function() {
+          title = $(this).siblings("textarea").first().val()
+          contObj = $(this).parents().eq(3)
+          console.log(contObj)
+          boardID = contObj.attr("data-id")
+          cardID = $(this).parent().parent().attr("data-eid")
+          console.log("Changing title")
+          $(this).parent().parent().children().show()
+          $(this).parent().hide()
+          conn.send("changeCardTitle ~ ~ " + JSON.stringify({
+            CardID: cardID,
+            BoardID: boardID,
+            Title: title
+          }))
+        })
+      },
+      refreshDrag: function() {
+        var refreshEvents = this.refreshEvents
         var drake = dragula($(".kanban-board main").toArray(), function() {
           revertOnSpill: true
-        }).on('drag', function(el, source) {
+        })
+        drake.on('drag', function(el, source) {
           el.classList.add('is-moving');
-          console.log("Drag", el, $(source).parent().attr("data-id"))
+          //console.log("Drag", el, $(source).parent().attr("data-id"))
         })
         drake.on('drop', function(el, target, source, sibling) {
           el.classList.remove('is-moving');
@@ -160,11 +190,7 @@ vueInit = function(conn, boardData) {
           conn.send("moveCard ~ ~ " + JSON.stringify(sendObj))
           drake.cancel(true);
         });
-      },
-      init: function() {
-        console.log("init")
-        console.log(this.$el)
-        dragula([this.$el], {
+        var drakeBoard = dragula($(".kanban-board").toArray(), {
           moves: function(el, source, handle, sibling) {
             return (handle.classList.contains('kanban-board-header') || handle.classList.contains('kanban-board-title'));
           },
@@ -175,23 +201,34 @@ vueInit = function(conn, boardData) {
           direction: 'horizontal',
         }).on('drag', function(el, source) {
           el.classList.add('is-moving');
-          this.dragBoard(el, source);
-          if (typeof(el.dragfn) === 'function')
-            el.dragfn(el, source);
-        }).on('dragend', function(el, source) {
-          el.classList.remove('is-moving');
-        }).on('drop', function(el, target, source, sibling) {
+        })
+        drakeBoard.on('drop', function(el, target, source, sibling) {
+          alert("Board Dropped")
           el.classList.remove('is-moving');
           console.log("Moved:", el)
           console.log("From:", source, "; To:", target)
           console.log("Sibling", sibling)
           console.log($(el).next())
-          return false;
+          sendObj = {
+            /*CardID: cardID,
+            OriginBoardID: $(source).parent().attr("data-id"),
+            DestBoardID: $(target).parent().attr("data-id"),
+            OrderBefore: parseInt($(el).prev().attr("data-order")),
+            OrderAfter: parseInt($(el).next().attr("data-order"))*/
+          }
+          conn.send("moveBoard ~ ~ " + JSON.stringify(sendObj))
+          drake.cancel(true);
         });
+      },
+      init: function() {
+        console.log("init")
+        console.log(this.$el)
       }
     }
   })
   app.init()
+  app.refreshEvents()
+  app.refreshDrag()
   app.calcWidth()
   return app
 }

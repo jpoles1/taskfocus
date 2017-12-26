@@ -21,7 +21,7 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-add:hover{
   background: #fff;
 }
-.kanban-add-textarea{
+.kanban-add-textarea. .kanban-card-title-textarea{
   font-family: Lato;
   font-size: 16px;
   padding: 15px;
