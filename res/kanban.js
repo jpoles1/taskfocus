@@ -1,5 +1,6 @@
 vueInit = function(conn, boardData) {
   var drake, drakeBoard
+  console.log(Object.values(JSON.parse(boardData)))
   var app = new Vue({
     el: '#myKanban',
     data: {
@@ -28,12 +29,14 @@ vueInit = function(conn, boardData) {
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
       },
-      moveCardBoard: function(boardID, cardID) {
+      moveCardBoard: function(cardID, originBoardID, destBoardID) {
+        console.log("moving board:", this.boardList[parseInt(originBoardID)].item[cardID])
+        Vue.set(this.boardList[parseInt(destBoardID)]["item"], cardID, this.boardList[parseInt(originBoardID)].item[cardID])
+        delete this.boardList[parseInt(originBoardID)].item[cardID]
         //Change Card from one board to another
       },
       calcWidth: function() {
         this.wallWidth = (this.boardWidth + 2 * this.gutter) * (this.boardList.length + 1)
-        console.log(this.wallWidth)
       },
       refreshEvents: function() {
         autosize($("textarea"))
@@ -59,8 +62,8 @@ vueInit = function(conn, boardData) {
           contObj = $(this).parents().eq(2)
           boardID = contObj.attr("data-id")
           taskTitle = $(this).prev().prev().val()
-          $(this).parent().children().hide()
-          $(this).siblings(".kanban-add").show()
+          $(this).parent().parent().children().hide()
+          $(this).parent().parent().children(".kanban-add").show()
           $(this).siblings("textarea").val("")
           conn.send("addCard ~ ~ " + JSON.stringify({
             BoardID: boardID,
@@ -102,6 +105,30 @@ vueInit = function(conn, boardData) {
             Title: title
           }))
         })
+        var drake = dragula($(".kanban-board main").toArray(), function() {
+          revertOnSpill: true
+        }).on('drag', function(el, source) {
+          el.classList.add('is-moving');
+          console.log("Drag", el, $(source).parent().attr("data-id"))
+        })
+        drake.on('drop', function(el, target, source, sibling) {
+          el.classList.remove('is-moving');
+          console.log("Moved:", el)
+          console.log("From:", source, "; To:", target)
+          console.log("Sibling", sibling)
+          console.log($(el).next())
+          cardID = $(el).attr("data-eid")
+          console.log(cardID)
+          sendObj = {
+            CardID: cardID,
+            OriginBoardID: $(source).parent().attr("data-id"),
+            DestBoardID: $(target).parent().attr("data-id")
+          }
+          if (typeof sendObj.OriginBoardID !== 'undefined' & typeof sendObj.DestBoardID !== 'undefined') {
+            conn.send("moveCard ~ ~ " + JSON.stringify(sendObj))
+          }
+          drake.cancel(true);
+        });
       },
       init: function() {
         console.log("init")
@@ -128,28 +155,7 @@ vueInit = function(conn, boardData) {
           console.log("From:", source, "; To:", target)
           console.log("Sibling", sibling)
           console.log($(el).next())
-        });
-
-        drake = dragula($(".kanban-board main").toArray(), function() {
-          revertOnSpill: true
-        }).on('drag', function(el, source) {
-          el.classList.add('is-moving');
-          console.log("Drag", el, $(source).parent().attr("data-id"))
-        }).on('dragend', function(el, source) {
-          el.classList.remove('is-moving');
-        }).on('drop', function(el, target, source, sibling) {
-          el.classList.remove('is-moving');
-          console.log("Moved:", el)
-          console.log("From:", source, "; To:", target)
-          console.log("Sibling", sibling)
-          console.log($(el).next())
-          cardID = $(el).attr("data-eid")
-          console.log(cardID)
-          conn.send("moveCard ~ ~ " + JSON.stringify({
-            CardID: cardID,
-            OriginBoardID: $(source).parent().attr("data-id"),
-            DestBoardID: $(target).parent().attr("data-id")
-          }))
+          return false;
         });
       }
     }

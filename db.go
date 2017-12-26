@@ -37,9 +37,9 @@ func retreiveWall() {
 	servKanbanData = wallList[0]
 }
 func mongoPopulate() {
-	servKanbanData = KanbanWall{"0", "Default", map[string]KanbanBoard{
-		"0": KanbanBoard{"0", "Todo", map[string]KanbanCard{
-		//"0": KanbanCard{"0", "New Task", "", map[string]KanbanTask{}},
+	servKanbanData = KanbanWall{"0", "Default", 0, map[string]KanbanBoard{
+		"0": KanbanBoard{"0", 0, "Todo", map[string]KanbanCard{
+		//"0": KanbanCard{"0", 0, "New Task", "", map[string]KanbanTask{}},
 		}},
 	}}
 	createWall(servKanbanData)

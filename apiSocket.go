@@ -9,6 +9,7 @@ import (
 func socketAddCard(data string, h *Hub) {
 	type CardData struct {
 		ID      string
+		Order   int
 		BoardID string
 		Title   string
 	}
@@ -17,12 +18,14 @@ func socketAddCard(data string, h *Hub) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Card Data", cardData)
-	newCard := KanbanCard{"0", cardData.Title, "", map[string]KanbanTask{}}
-	cardData.ID = servKanbanData.addCard(cardData.BoardID, newCard)
-	fmt.Println(cardData)
-	broadcast, _ := json.Marshal(cardData)
-	h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
+	fmt.Println("Add Card", cardData)
+	newCard := KanbanCard{"0", 0, cardData.Title, "", map[string]KanbanTask{}}
+	if len(cardData.BoardID) > 0 {
+		cardData.ID, cardData.Order = servKanbanData.addCard(cardData.BoardID, newCard)
+		fmt.Println(cardData)
+		broadcast, _ := json.Marshal(cardData)
+		h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
+	}
 }
 func socketAddBoard(data string, h *Hub) {
 	type BoardData struct {
@@ -34,8 +37,8 @@ func socketAddBoard(data string, h *Hub) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Board Data", boardData)
-	newBoard := KanbanBoard{"0", boardData.Title, map[string]KanbanCard{}}
+	fmt.Println("Add Board", boardData)
+	newBoard := KanbanBoard{"0", 0, boardData.Title, map[string]KanbanCard{}}
 	boardData.ID = servKanbanData.addBoard(newBoard)
 	fmt.Println(boardData)
 	broadcast, _ := json.Marshal(boardData)
@@ -51,7 +54,7 @@ func socketChangeBoardTitle(data string, h *Hub) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Change Board Title Data", titleData)
+	fmt.Println("Change Board Title:", titleData)
 	servKanbanData.changeBoardTitle(titleData.BoardID, titleData.Title)
 	fmt.Println(titleData)
 	h.broadcastAll([]byte("changeBoardTitle ~ ~ " + data))
@@ -67,8 +70,9 @@ func socketMoveCard(data string, h *Hub) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Change Board Title Data", moveData)
-	servKanbanData.moveCard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
-	fmt.Println(moveData)
+	fmt.Println("Move Card:", moveData)
+	if moveData.OriginBoardID != moveData.DestBoardID {
+		servKanbanData.moveCard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
+	}
 	h.broadcastAll([]byte("moveCard ~ ~ " + data))
 }
