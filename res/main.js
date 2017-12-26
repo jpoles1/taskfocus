@@ -2,6 +2,7 @@ $(function() {
   var KanbanTest
   var initialized = 0;
   var conn;
+  console.log("AccountID:", urlAccountID, "WallID:", urlWallID)
 
   function startSocket(startCallback, msgCallback) {
     if (window["WebSocket"]) {
@@ -20,7 +21,7 @@ $(function() {
   }
   var app;
   startSocket(function(conn) {
-    conn.send("init ~ ~ test")
+    conn.send("init ~ ~ {\"WallID\": \"" + urlWallID + "\"}")
   }, function(evt) {
     msgsplit = evt.data.split(" ~ ~ ")
     if (msgsplit.length == 2) {

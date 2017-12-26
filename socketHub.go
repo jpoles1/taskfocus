@@ -5,7 +5,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"strings"
 )
@@ -56,8 +55,7 @@ func (h *Hub) run() {
 			case "all":
 				h.broadcastAll(msg)
 			case "init":
-				data, _ := json.Marshal(servKanbanData.BoardList)
-				h.broadcastAll([]byte("init ~ ~ " + string(data)))
+				socketInitWall(msgsplit[1], h)
 			case "addCard":
 				socketAddCard(msgsplit[1], h)
 			case "addBoard":

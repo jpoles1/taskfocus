@@ -95,6 +95,7 @@ vueInit = function(conn, boardData) {
           $(this).parent().parent().children(".kanban-add").show()
           $(this).siblings("textarea").val("")
           conn.send("addCard ~ ~ " + JSON.stringify({
+            WallID: urlWallID,
             BoardID: boardID,
             Title: taskTitle
           }))
@@ -130,6 +131,7 @@ vueInit = function(conn, boardData) {
           $(this).parent().parent().children().show()
           $(this).parent().hide()
           conn.send("changeBoardTitle ~ ~ " + JSON.stringify({
+            WallID: urlWallID,
             BoardID: boardID,
             Title: title
           }))
@@ -150,6 +152,7 @@ vueInit = function(conn, boardData) {
           $(this).parent().parent().children().show()
           $(this).parent().hide()
           conn.send("changeCardTitle ~ ~ " + JSON.stringify({
+            WallID: urlWallID,
             CardID: cardID,
             BoardID: boardID,
             Title: title
@@ -172,6 +175,7 @@ vueInit = function(conn, boardData) {
           console.log("Siblings", $(el).prev().attr("data-order"), $(el).next().attr("data-order"))*/
           cardID = $(el).attr("data-eid")
           sendObj = {
+            WallID: urlWallID,
             CardID: cardID,
             OriginBoardID: $(source).parent().attr("data-id"),
             DestBoardID: $(target).parent().attr("data-id"),

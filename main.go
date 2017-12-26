@@ -15,7 +15,8 @@ import (
 )
 
 var nodeIdentifier = uuid.NewV4().String()
-var servKanbanData = KanbanWall{}
+var servKanbanData = KanbanServer{}
+var servAccounts = make(map[string]KanbanAccount, 0)
 
 func init() {
 	gotenv.Load()
@@ -34,6 +35,8 @@ func main() {
 	router.PathPrefix("/res").Handler(http.StripPrefix("/res", http.FileServer(http.Dir("res/"))))
 	//UI routing
 	router.HandleFunc("/", homePage).Methods("GET")
+	router.HandleFunc("/focus/{accountID}", userPage).Methods("GET")
+	router.HandleFunc("/focus/{accountID}/{wallID}", wallPage).Methods("GET")
 	//API routing
 	router.HandleFunc("/api/exportWall", apiExportWall).Methods("GET")
 	//API sockets

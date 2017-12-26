@@ -6,10 +6,23 @@ import (
 	"log"
 )
 
+func socketInitWall(data string, h *Hub) {
+	type InitData struct {
+		WallID string
+	}
+	var initData InitData
+	err := json.Unmarshal([]byte(data), &initData)
+	if err != nil {
+		log.Println(err)
+	}
+	outData, _ := json.Marshal(servKanbanData.WallList[initData.WallID].BoardList)
+	h.broadcastAll([]byte("init ~ ~ " + string(outData)))
+}
 func socketAddCard(data string, h *Hub) {
 	type CardData struct {
 		ID      string
 		Order   int
+		WallID  string
 		BoardID string
 		Title   string
 	}
@@ -21,7 +34,8 @@ func socketAddCard(data string, h *Hub) {
 	fmt.Println("Add Card", cardData)
 	newCard := KanbanCard{"0", 0, cardData.Title, "", map[string]KanbanTask{}}
 	if len(cardData.BoardID) > 0 {
-		cardData.ID, cardData.Order = servKanbanData.addCard(cardData.BoardID, newCard)
+		kw := servKanbanData.WallList[cardData.WallID]
+		cardData.ID, cardData.Order = kw.addCard(newCard, cardData.BoardID)
 		fmt.Println(cardData)
 		broadcast, _ := json.Marshal(cardData)
 		h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
@@ -29,8 +43,9 @@ func socketAddCard(data string, h *Hub) {
 }
 func socketAddBoard(data string, h *Hub) {
 	type BoardData struct {
-		ID    string
-		Title string
+		ID     string
+		WallID string
+		Title  string
 	}
 	var boardData BoardData
 	err := json.Unmarshal([]byte(data), &boardData)
@@ -39,13 +54,15 @@ func socketAddBoard(data string, h *Hub) {
 	}
 	fmt.Println("Add Board", boardData)
 	newBoard := KanbanBoard{"0", 0, boardData.Title, map[string]KanbanCard{}}
-	boardData.ID = servKanbanData.addBoard(newBoard)
+	kw := servKanbanData.WallList[boardData.WallID]
+	boardData.ID = kw.addBoard(newBoard)
 	fmt.Println(boardData)
 	broadcast, _ := json.Marshal(boardData)
 	h.broadcastAll([]byte("addBoard ~ ~ " + string(broadcast)))
 }
 func socketChangeBoardTitle(data string, h *Hub) {
 	type TitleData struct {
+		WallID  string
 		BoardID string
 		Title   string
 	}
@@ -55,7 +72,8 @@ func socketChangeBoardTitle(data string, h *Hub) {
 		log.Println(err)
 	}
 	fmt.Println("Change Board Title:", titleData)
-	servKanbanData.changeBoardTitle(titleData.BoardID, titleData.Title)
+	kw := servKanbanData.WallList[titleData.WallID]
+	kw.changeBoardTitle(titleData.Title, titleData.BoardID)
 	fmt.Println(titleData)
 	h.broadcastAll([]byte("changeBoardTitle ~ ~ " + data))
 }
@@ -63,6 +81,7 @@ func socketChangeCardTitle(data string, h *Hub) {
 	type TitleData struct {
 		CardID  string
 		BoardID string
+		WallID  string
 		Title   string
 	}
 	var titleData TitleData
@@ -71,13 +90,15 @@ func socketChangeCardTitle(data string, h *Hub) {
 		log.Println(err)
 	}
 	fmt.Println("Change Card Title:", titleData)
-	servKanbanData.changeCardTitle(titleData.CardID, titleData.BoardID, titleData.Title)
+	kw := servKanbanData.WallList[titleData.WallID]
+	kw.changeCardTitle(titleData.Title, titleData.BoardID, titleData.CardID)
 	fmt.Println(titleData)
 	h.broadcastAll([]byte("changeCardTitle ~ ~ " + data))
 }
 func socketMoveCard(data string, h *Hub) {
 	type MoveData struct {
 		CardID        string
+		WallID        string
 		OriginBoardID string
 		DestBoardID   string
 		OrderBefore   int
@@ -89,9 +110,10 @@ func socketMoveCard(data string, h *Hub) {
 		log.Println(err)
 	}
 	fmt.Println("Move Card:", moveData)
+	kw := servKanbanData.WallList[moveData.WallID]
 	if moveData.OriginBoardID != moveData.DestBoardID {
-		servKanbanData.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
+		kw.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
 	}
-	servKanbanData.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
+	kw.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
 	h.broadcastAll([]byte("moveCard ~ ~ " + data))
 }

@@ -1,6 +1,4 @@
-<nav class="demo" style="position: absolute;">
-  <a href="/" class="brand">TaskFocus</a>
-</nav>
+{{{nav}}}
 <center style="margin-top: 50px;">
 <h2>Tasks in Focus</h2>
 </center>
@@ -8,9 +6,9 @@
   <div class="kanban-container" :style="{'width': wallWidth+'px'}">
     <div class="kanban-board" v-for="board in boardList" :data-id="board.id" :style="{'width': boardWidth+'px', 'margin-left': gutter+'px', 'margin-right': gutter+'px'}">
       <header class="kanban-board-header">
-        <div class="kanban-board-title">\{{board.id}} - \{{board.title}}</div>
+        <div class="kanban-board-title">\{{board.id}} - \{{board.name}}</div>
         <div class='kanban-board-title-form' style="display: none">
-          <input type="text" :value="board.title" :defaultvalue="board.title"></input>
+          <input type="text" :value="board.title" :defaultvalue="board.name"></input>
           <br>
           <button type="submit">Save</button>
           <a class="cancel" style="font-size: 24px; float: right;">X</a>
@@ -52,3 +50,10 @@
     </div>
   </div>
 </div>
+<script>
+  var urlAccountID = "{{accountID}}"
+  var urlWallID = "{{wallID}}"
+</script>
+<script src="/res/socket.js"></script>
+<script src="/res/kanban.js"></script>
+<script src="/res/main.js"></script>

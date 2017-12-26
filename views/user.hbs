@@ -1,0 +1,12 @@
+{{{nav}}}
+<center style="margin-top: 50px;">
+<h2>Welcome User: {{accountID}}</h2>
+<hr>
+</center>
+<div style="display: flex; justify-content: space-around;">
+  {{#each userWalls}}
+    <div style="width: 250px; height: 120px; background-color: #bbb; padding: 20px;">
+      <a href="/focus/{{accountID}}/{{this.ID}}" style="font-size: 22px; font-weight: bold">{{this.Name}}</a>
+    </div>
+  {{/each}}
+</div>

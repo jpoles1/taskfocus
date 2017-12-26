@@ -5,16 +5,34 @@ import (
 	"strconv"
 )
 
+type KanbanServer struct {
+	WallList map[string]KanbanWall
+}
+
+func (ks *KanbanServer) userWalls(accountID string) []KanbanWall {
+	var userWalls []KanbanWall
+	for _, val := range ks.WallList {
+		userWalls = append(userWalls, val)
+	}
+	return userWalls
+}
+
+type KanbanAccount struct {
+	ID         string
+	Email      string
+	Uname      string
+	WallIDList []string
+}
 type KanbanWall struct {
-	ID        string
-	Name      string
+	ID        string `json:"id"`
+	Name      string `json:"name"`
 	cardCt    int
-	BoardList map[string]KanbanBoard
+	BoardList map[string]KanbanBoard `json:"boardList"`
 }
 type KanbanBoard struct {
 	ID       string                `json:"id"`
 	Order    int                   `json:"order"`
-	Name     string                `json:"title"`
+	Name     string                `json:"name"`
 	CardList map[string]KanbanCard `json:"item"`
 }
 
@@ -38,7 +56,7 @@ func (kw *KanbanWall) changeCardTitle(cardID string, boardID string, title strin
 	kw.BoardList[boardID].CardList[cardID] = kc
 	updateWall("0", kw)
 }
-func (kw *KanbanWall) addCard(boardID string, kc KanbanCard) (string, int) {
+func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {
 	kb := kw.BoardList[boardID]
 	kc.ID = strconv.Itoa(kw.cardCt)
 	kc.Order = len(kb.CardList)

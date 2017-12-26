@@ -27,26 +27,36 @@ func mongoLoad() {
 func retreiveWall() {
 	mongoSesh := mongoDB.Copy()
 	defer mongoSesh.Close()
-	var wallList []KanbanWall
-	mongoSesh.DB("heroku_v5zcbp27").C("walls").Find(bson.M{}).All(&wallList)
+	var wallSlice []KanbanWall
+	mongoSesh.DB("heroku_v5zcbp27").C("walls").Find(bson.M{}).All(&wallSlice)
+	wallList := make(map[string]KanbanWall)
+	for _, wall := range wallSlice {
+		wallList[wall.ID] = wall
+		wall.cardCt = 0
+		for _, board := range wall.BoardList {
+			wall.cardCt += len(board.CardList)
+		}
+	}
 	fmt.Println(wallList)
 	if len(wallList) < 1 {
 		mongoPopulate()
 		return
 	}
-	servKanbanData = wallList[0]
-	servKanbanData.cardCt = 0
-	for _, board := range servKanbanData.BoardList {
-		servKanbanData.cardCt += len(board.CardList)
+	servAccounts["1"] = KanbanAccount{
+		ID:         "1",
+		WallIDList: []string{"0"},
 	}
+	servKanbanData = KanbanServer{wallList}
+
 }
 func mongoPopulate() {
-	servKanbanData = KanbanWall{"0", "Default", 0, map[string]KanbanBoard{
+	wall1 := KanbanWall{"0", "Default", 0, map[string]KanbanBoard{
 		"0": KanbanBoard{"0", 0, "Todo", map[string]KanbanCard{
 		//"0": KanbanCard{"0", 0, "New Task", "", map[string]KanbanTask{}},
 		}},
 	}}
-	createWall(servKanbanData)
+	servKanbanData = KanbanServer{map[string]KanbanWall{"0": wall1}}
+	createWall(wall1)
 }
 
 func createWall(kw KanbanWall) {
