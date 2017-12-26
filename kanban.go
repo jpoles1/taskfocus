@@ -26,7 +26,7 @@ type KanbanAccount struct {
 type KanbanWall struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	cardCt    int
+	CardCt    int
 	BoardList map[string]KanbanBoard `json:"boardList"`
 }
 type KanbanBoard struct {
@@ -41,35 +41,35 @@ func (kw *KanbanWall) addBoard(kb KanbanBoard) string {
 	kb.Order = len(kw.BoardList)
 	fmt.Println(kb)
 	kw.BoardList[kb.ID] = kb
-	updateWall("0", kw)
+	updateWall(kw.ID, kw)
 	return kb.ID
 }
 func (kw *KanbanWall) changeBoardTitle(boardID string, title string) {
 	kb := kw.BoardList[boardID]
 	kb.Name = title
 	kw.BoardList[boardID] = kb
-	updateWall("0", kw)
+	updateWall(kw.ID, kw)
 }
-func (kw *KanbanWall) changeCardTitle(cardID string, boardID string, title string) {
+func (kw *KanbanWall) changeCardTitle(title string, boardID string, cardID string) {
 	kc := kw.BoardList[boardID].CardList[cardID]
 	kc.Title = title
 	kw.BoardList[boardID].CardList[cardID] = kc
-	updateWall("0", kw)
+	updateWall(kw.ID, kw)
 }
 func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {
 	kb := kw.BoardList[boardID]
-	kc.ID = strconv.Itoa(kw.cardCt)
+	kc.ID = strconv.Itoa(kw.CardCt)
 	kc.Order = len(kb.CardList)
 	fmt.Println(kb)
 	kb.CardList[kc.ID] = kc
-	kw.cardCt++
-	updateWall("0", kw)
+	kw.CardCt++
+	updateWall(kw.ID, kw)
 	return kc.ID, kc.Order
 }
 func (kw *KanbanWall) moveCardBoard(cardID string, originBoardID string, destBoardID string) {
 	kw.BoardList[destBoardID].CardList[cardID] = kw.BoardList[originBoardID].CardList[cardID]
 	delete(kw.BoardList[originBoardID].CardList, cardID)
-	updateWall("0", kw)
+	updateWall(kw.ID, kw)
 }
 func (kw *KanbanWall) moveCardOrder(cardID string, destBoardID string, orderBefore int, orderAfter int) {
 	fmt.Println("OBefore", orderBefore)
@@ -83,7 +83,7 @@ func (kw *KanbanWall) moveCardOrder(cardID string, destBoardID string, orderBefo
 	oldCard.Order = orderBefore
 	kw.BoardList[destBoardID].CardList[cardID] = oldCard
 	fmt.Println(kw.BoardList[destBoardID])
-	updateWall("0", kw)
+	updateWall(kw.ID, kw)
 }
 
 type KanbanCard struct {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -31,13 +32,12 @@ func retreiveWall() {
 	mongoSesh.DB("heroku_v5zcbp27").C("walls").Find(bson.M{}).All(&wallSlice)
 	wallList := make(map[string]KanbanWall)
 	for _, wall := range wallSlice {
-		wallList[wall.ID] = wall
-		wall.cardCt = 0
+		wall.CardCt = 0
 		for _, board := range wall.BoardList {
-			wall.cardCt += len(board.CardList)
+			wall.CardCt += len(board.CardList)
 		}
+		wallList[wall.ID] = wall
 	}
-	fmt.Println(wallList)
 	if len(wallList) < 1 {
 		mongoPopulate()
 		return
@@ -47,6 +47,12 @@ func retreiveWall() {
 		WallIDList: []string{"0"},
 	}
 	servKanbanData = KanbanServer{wallList}
+	servjson, err := json.Marshal(servKanbanData)
+	if err != nil {
+		log.Println("Error: " + err.Error())
+		return
+	}
+	fmt.Println(string(servjson))
 
 }
 func mongoPopulate() {

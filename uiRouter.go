@@ -23,7 +23,7 @@ func renderRedirect(redirMsg string, redirUrl string, w http.ResponseWriter) {
 	}
 }
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderPage("kanban.hbs", map[string]interface{}{}, w)
+	renderPage("home.hbs", map[string]interface{}{}, w)
 }
 func userPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)

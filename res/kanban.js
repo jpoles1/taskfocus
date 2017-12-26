@@ -25,7 +25,7 @@ vueInit = function(conn, boardData) {
       addBoard: function(boardID, name) {
         this.boardList.push({
           id: boardID,
-          title: name,
+          name: name,
           item: {}
         })
         this.calcWidth()
@@ -111,6 +111,7 @@ vueInit = function(conn, boardData) {
           }
           console.log("Adding new board")
           conn.send("addBoard ~ ~ " + JSON.stringify({
+            WallID: urlWallID,
             Title: title
           }))
           $(this).siblings(".cancel").click()
@@ -137,26 +138,34 @@ vueInit = function(conn, boardData) {
           }))
         })
         $(".kanban-card-title").off("click").click(function() {
-
           $(this).parent().children().show()
           $(this).hide()
           autosize.update($("textarea"))
         })
-        $(".kanban-card-title-form button").off("click").click(function() {
-          title = $(this).siblings("textarea").first().val()
-          contObj = $(this).parents().eq(3)
+
+        function submitCardtitleForm(el) {
+          title = $(el).parent().children("textarea").first().val()
+          contObj = $(el).parents().eq(3)
           console.log(contObj)
           boardID = contObj.attr("data-id")
-          cardID = $(this).parent().parent().attr("data-eid")
+          cardID = $(el).parent().parent().attr("data-eid")
           console.log("Changing title")
-          $(this).parent().parent().children().show()
-          $(this).parent().hide()
+          $(el).parent().parent().children().show()
+          $(el).parent().hide()
           conn.send("changeCardTitle ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             CardID: cardID,
             BoardID: boardID,
             Title: title
           }))
+        }
+        $(".kanban-card-title-form textarea").off("keydown").keydown(function(e) {
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitCardtitleForm(this)
+          }
+        });
+        $(".kanban-card-title-form button").off("click").click(function() {
+          submitCardtitleForm(this)
         })
       },
       refreshDrag: function() {
@@ -214,6 +223,7 @@ vueInit = function(conn, boardData) {
           console.log("Sibling", sibling)
           console.log($(el).next())
           sendObj = {
+            WallID: urlWallID
             /*CardID: cardID,
             OriginBoardID: $(source).parent().attr("data-id"),
             DestBoardID: $(target).parent().attr("data-id"),

@@ -36,6 +36,7 @@ func socketAddCard(data string, h *Hub) {
 	if len(cardData.BoardID) > 0 {
 		kw := servKanbanData.WallList[cardData.WallID]
 		cardData.ID, cardData.Order = kw.addCard(newCard, cardData.BoardID)
+		servKanbanData.WallList[cardData.WallID] = kw
 		fmt.Println(cardData)
 		broadcast, _ := json.Marshal(cardData)
 		h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
