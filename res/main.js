@@ -51,6 +51,10 @@ $(function() {
         console.log(app.boardList)
         app.addBoard(newBoard.ID, newBoard.Name)
       }
+      if (msgsplit[0] == "addWall") {
+        newWall = JSON.parse(msgsplit[1])
+        window.location = "/focus/" + urlAccountID + "/" + newWall.WallID
+      }
       if (msgsplit[0] == "changeBoardName") {
         newBoard = JSON.parse(msgsplit[1])
         console.log("Change Board Name:", newBoard)

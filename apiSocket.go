@@ -20,6 +20,7 @@ func socketInitWall(data string, h *Hub) {
 }
 func socketAddWall(data string, h *Hub) {
 	type WallData struct {
+		WallID    string
 		AccountID string
 		WallName  string
 	}
@@ -28,7 +29,7 @@ func socketAddWall(data string, h *Hub) {
 	if err != nil {
 		log.Println(err)
 	}
-	servKanbanData.addWall(wallData.AccountID, wallData.WallName)
+	wallData.WallID = servKanbanData.addWall(wallData.AccountID, wallData.WallName)
 	outData, _ := json.Marshal(wallData)
 	h.broadcastAll([]byte("addWall ~ ~ " + string(outData)))
 }

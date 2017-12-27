@@ -87,7 +87,6 @@ vueInit = function(conn, boardData) {
         })
         //This .off() statement clears keydown events for all subsequent textarea,input
         $("textarea, input").off("keydown").keydown(function(event) {
-          console.log(event.keyCode)
           if (event.keyCode == 27) {
             $(this).siblings(".cancel").click()
           }
@@ -161,22 +160,31 @@ vueInit = function(conn, boardData) {
           $(this).hide()
           $(this).siblings(".kanban-board-title-form").children("input").focus()
         })
-        $(".kanban-board-title-form button").off("click").click(function() {
-          name = $(this).siblings("input").first().val()
+
+        function submitBoardNameForm(el) {
+          name = $(el).parent().children("input").first().val()
           if ($.trim(name) == "") {
             return
           }
-          contObj = $(this).parents().eq(2)
+          contObj = $(el).parents().eq(2)
           console.log(contObj)
           boardID = contObj.attr("data-id")
           console.log("Changing title")
-          $(this).parent().parent().children().show()
-          $(this).parent().hide()
+          $(el).parent().parent().children().show()
+          $(el).parent().hide()
           conn.send("changeBoardName ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             BoardID: boardID,
             Name: name
           }))
+        }
+        $(".kanban-board-title-form input").keydown(function(e) {
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitBoardNameForm(this)
+          }
+        });
+        $(".kanban-board-title-form button").off("click").click(function() {
+          submitBoardNameForm(this)
         })
         $(".kanban-card-title").off("click").click(function() {
           $(this).parent().children().show()
@@ -185,7 +193,7 @@ vueInit = function(conn, boardData) {
           $(this).siblings(".kanban-card-title-form").children("textarea").focus()
         })
 
-        function submitCardtitleForm(el) {
+        function submitCardTitleForm(el) {
           title = $(el).parent().children("textarea").first().val()
           contObj = $(el).parents().eq(3)
           console.log(contObj)
@@ -214,11 +222,11 @@ vueInit = function(conn, boardData) {
         }
         $(".kanban-card-title-form textarea").keydown(function(e) {
           if (e.ctrlKey && e.keyCode == 13) {
-            submitCardtitleForm(this)
+            submitCardTitleForm(this)
           }
         });
         $(".kanban-card-title-form button").off("click").click(function() {
-          submitCardtitleForm(this)
+          submitCardTitleForm(this)
         })
       },
       refreshDrag: function() {
