@@ -34,6 +34,7 @@ func main() {
 	router.PathPrefix("/res").Handler(http.StripPrefix("/res", http.FileServer(http.Dir("res/"))))
 	//UI routing
 	router.HandleFunc("/", homePage).Methods("GET")
+	router.HandleFunc("/favicon.ico", faviconServer).Methods("GET")
 	router.HandleFunc("/focus/{accountID}", userPage).Methods("GET")
 	router.HandleFunc("/focus/{accountID}/{wallID}", wallPage).Methods("GET")
 	//API routing

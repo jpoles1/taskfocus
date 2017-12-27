@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>JKanban</title>
+    <title>TaskFocus</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -21,7 +21,7 @@
   <body>
     {{#if accountID}}
       <nav class="demo" style="position: absolute;">
-        <a href="/" class="brand" style="margin-right: 20px; border-right: .5px solid #333;">TaskFocus</a>
+        <a href="/{{#if accountID}}focus/{{accountID}}{{/if}}" class="brand" style="margin-right: 20px; border-right: .5px solid #333;">TaskFocus</a>
         <div class="menu" style="float: left">
           {{#each userWalls}}
             <a href="/focus/{{accountID}}/{{this.ID}}" class="pseudo button">{{this.Name}}</a>

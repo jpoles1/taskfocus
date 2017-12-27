@@ -22,6 +22,9 @@ func renderRedirect(redirMsg string, redirUrl string, w http.ResponseWriter) {
 		w.Write([]byte(err.Error()))
 	}
 }
+func faviconServer(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "res/favicon.ico")
+}
 func homePage(w http.ResponseWriter, r *http.Request) {
 	renderPage("home.hbs", map[string]interface{}{}, w)
 }
