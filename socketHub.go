@@ -49,8 +49,9 @@ func (h *Hub) run() {
 			if len(msgsplit) != 2 {
 				log.Println("Socket Error: Poorly Formatted Message")
 			}
-			log.Println("Socket msgtype:", msgsplit[0])
-			log.Println("Socket msg:", msgsplit[1])
+			//Useful for socket debugging
+			//log.Println("Socket msgtype:", msgsplit[0])
+			//log.Println("Socket msg:", msgsplit[1])
 			switch msgsplit[0] {
 			case "all":
 				h.broadcastAll(msg)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -47,13 +46,6 @@ func retreiveWall() {
 	servKanbanData = KanbanServer{wallList, map[string]KanbanAccount{
 		"1": KanbanAccount{ID: "1", WallIDList: []string{"0"}},
 	}}
-	servjson, err := json.Marshal(servKanbanData)
-	if err != nil {
-		log.Println("Error: " + err.Error())
-		return
-	}
-	fmt.Println(string(servjson))
-
 }
 func mongoPopulate() {
 	wall1 := KanbanWall{"0", "Default", 0, map[string]KanbanBoard{

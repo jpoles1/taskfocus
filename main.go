@@ -49,6 +49,7 @@ func main() {
 	flag.Parse()
 	port := ":" + *portPtr
 	color.Green("Starting server on port: %s", port[1:])
+	color.Green("Access server locally at: http://127.0.0.1:%s", port[1:])
 	//Handling system signals
 	log.Fatal(http.ListenAndServe(port, router))
 	fmt.Println("Terminating Kanban Server...")

@@ -1,3 +1,4 @@
 .envs
 gomon_spawn
-taskfocus
+taskfocus.sh
+taskfocus.exe
