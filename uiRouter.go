@@ -28,8 +28,8 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 func userPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
 	accountID := urlparams["accountID"]
-	fmt.Println("UID", accountID, servAccounts)
-	if val, ok := servAccounts[accountID]; ok {
+	fmt.Println("UID", accountID, servKanbanData.AccountList)
+	if val, ok := servKanbanData.AccountList[accountID]; ok {
 		fmt.Println(val)
 		renderPage("user.hbs", map[string]interface{}{"accountID": accountID, "userWalls": servKanbanData.userWalls(accountID)}, w)
 	} else {
@@ -40,11 +40,12 @@ func wallPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
 	accountID := urlparams["accountID"]
 	wallID := urlparams["wallID"]
-	if _, ok := servAccounts[accountID]; ok {
+	if _, ok := servKanbanData.AccountList[accountID]; ok {
 		if _, ok := servKanbanData.WallList[wallID]; ok {
 			renderPage("kanban.hbs", map[string]interface{}{
 				"accountID": accountID,
 				"wallID":    wallID,
+				"wallName":  servKanbanData.WallList[wallID].Name,
 				"userWalls": servKanbanData.userWalls(accountID),
 			}, w)
 		} else {

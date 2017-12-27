@@ -6,7 +6,8 @@ import (
 )
 
 type KanbanServer struct {
-	WallList map[string]KanbanWall
+	WallList    map[string]KanbanWall
+	AccountList map[string]KanbanAccount
 }
 
 func (ks *KanbanServer) userWalls(accountID string) []KanbanWall {
@@ -15,6 +16,13 @@ func (ks *KanbanServer) userWalls(accountID string) []KanbanWall {
 		userWalls = append(userWalls, val)
 	}
 	return userWalls
+}
+func (ks *KanbanServer) addWall(accountID string, wallName string) string {
+	wallID := strconv.Itoa(len(ks.WallList))
+	ks.WallList[wallID] = KanbanWall{wallID, wallName, 0, map[string]KanbanBoard{}}
+	kw := ks.WallList[wallID]
+	createWall(kw)
+	return wallID
 }
 
 type KanbanAccount struct {

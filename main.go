@@ -16,7 +16,6 @@ import (
 
 var nodeIdentifier = uuid.NewV4().String()
 var servKanbanData = KanbanServer{}
-var servAccounts = make(map[string]KanbanAccount, 0)
 
 func init() {
 	gotenv.Load()

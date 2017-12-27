@@ -30,6 +30,7 @@ vueInit = function(conn, boardData) {
         })
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
+        setTimeout(this.refreshDrag, 200)
       },
       changeBoardTitle: function(boardID, title) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
@@ -80,6 +81,13 @@ vueInit = function(conn, boardData) {
             }
           })
         })
+        $(".kanban-addwall-btn").off("click").click(function() {
+          var wallName = prompt("Name of New Wall")
+          conn.send("addWall ~ ~ " + JSON.stringify({
+            AccountID: urlAccountID,
+            WallName: wallName
+          }))
+        })
         $(".kanban-add").off("click").click(function() {
           contObj = $(this).parent().parent()
           boardId = contObj.attr("data-id")
@@ -87,25 +95,34 @@ vueInit = function(conn, boardData) {
           $(this).hide()
           $(this).siblings("div").children("textarea").focus()
         })
-        $(".kanban-add-btn").off("click").click(function() {
-          contObj = $(this).parents().eq(2)
+
+        function submitAddCardForm(el) {
+          console.log("ADD")
+          contObj = $(el).parents().eq(2)
           boardID = contObj.attr("data-id")
-          taskTitle = $(this).prev().prev().val()
-          $(this).parent().parent().children().hide()
-          $(this).parent().parent().children(".kanban-add").show()
-          $(this).siblings("textarea").val("")
+          taskTitle = $(el).parents().children(".kanban-add-textarea").first().val()
           conn.send("addCard ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             BoardID: boardID,
             Title: taskTitle
           }))
+          $(el).siblings(".cancel").click()
+        }
+        $(".kanban-add-btn").off("click").click(function() {
+          submitAddCardForm(this)
         })
+        $(".kanban-add-textarea").off("keydown").keydown(function(e) {
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitAddCardForm(this)
+          }
+        });
         $(".kanban-addboard-btn").off("click").click(function() {
           $(this).parent().children().show()
           $(this).hide()
         })
-        $(".kanban-addboard-form button").off("click").click(function() {
-          title = $(this).siblings("input").first().val()
+
+        function submitAddBoardForm(el) {
+          title = $(el).parent().children("input").first().val()
           if ($.trim(title) == "") {
             return
           }
@@ -114,8 +131,16 @@ vueInit = function(conn, boardData) {
             WallID: urlWallID,
             Title: title
           }))
-          $(this).siblings(".cancel").click()
+          $(el).siblings(".cancel").click()
+        }
+        $(".kanban-addboard-form button").off("click").click(function() {
+          submitAddBoardForm(this)
         })
+        $(".kanban-addboard-form input").off("keydown").keydown(function(e) {
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitAddBoardForm(this)
+          }
+        });
         $(".kanban-board-title").off("click").click(function() {
           $(this).parent().children().show()
           $(this).hide()

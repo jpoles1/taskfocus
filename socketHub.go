@@ -60,6 +60,8 @@ func (h *Hub) run() {
 				socketAddCard(msgsplit[1], h)
 			case "addBoard":
 				socketAddBoard(msgsplit[1], h)
+			case "addWall":
+				socketAddWall(msgsplit[1], h)
 			case "changeBoardTitle":
 				socketChangeBoardTitle(msgsplit[1], h)
 			case "changeCardTitle":

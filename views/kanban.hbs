@@ -1,8 +1,7 @@
-{{{nav}}}
 <center style="margin-top: 50px;">
-<h2>Tasks in Focus</h2>
+<h2>Tasks in Focus: {{wallName}}</h2>
 </center>
-<div id="myKanban">
+<div id="myKanban" style="min-height: 100%; width: 100%; overflow-x: scroll;">
   <div class="kanban-container" :style="{'width': wallWidth+'px'}">
     <div class="kanban-board" v-for="board in boardList" :data-id="board.id" :style="{'width': boardWidth+'px', 'margin-left': gutter+'px', 'margin-right': gutter+'px'}">
       <header class="kanban-board-header">

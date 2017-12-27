@@ -42,11 +42,9 @@ func retreiveWall() {
 		mongoPopulate()
 		return
 	}
-	servAccounts["1"] = KanbanAccount{
-		ID:         "1",
-		WallIDList: []string{"0"},
-	}
-	servKanbanData = KanbanServer{wallList}
+	servKanbanData = KanbanServer{wallList, map[string]KanbanAccount{
+		"1": KanbanAccount{ID: "1", WallIDList: []string{"0"}},
+	}}
 	servjson, err := json.Marshal(servKanbanData)
 	if err != nil {
 		log.Println("Error: " + err.Error())
@@ -61,7 +59,12 @@ func mongoPopulate() {
 		//"0": KanbanCard{"0", 0, "New Task", "", map[string]KanbanTask{}},
 		}},
 	}}
-	servKanbanData = KanbanServer{map[string]KanbanWall{"0": wall1}}
+	servKanbanData = KanbanServer{
+		map[string]KanbanWall{"0": wall1},
+		map[string]KanbanAccount{
+			"1": KanbanAccount{ID: "1", WallIDList: []string{"0"}},
+		},
+	}
 	createWall(wall1)
 }
 
