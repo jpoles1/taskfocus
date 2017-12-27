@@ -1,6 +1,61 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "p5z5hdUt68Z3tK7Is+yLGrCNzoA=",
+			"path": "github.com/fatih/color",
+			"revision": "5df930a27be2502f99b292b7cc09ebad4d0891f4",
+			"revisionTime": "2017-09-26T11:14:11Z"
+		},
+		{
+			"checksumSHA1": "3HFUqdhX43kNPJe18WJWCVkthKI=",
+			"path": "github.com/gorilla/mux",
+			"revision": "2d5fef06b891c971b14aa6f71ca5ab6c03a36e0e",
+			"revisionTime": "2017-11-09T03:54:02Z"
+		},
+		{
+			"checksumSHA1": "8KawKW6FJguwWz5cPvMg/ChmepE=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "a69d9f6de432e2c6b296a947d8a5ee88f68522cf",
+			"revisionTime": "2017-07-18T20:23:41Z"
+		},
+		{
+			"checksumSHA1": "Wt7IQViAEMdmtqLOFjc0GyCNPAk=",
+			"path": "github.com/kataras/go-template",
+			"revision": "a4a986b413e8d88ebd894b4a3e327314069f2439",
+			"revisionTime": "2017-03-09T13:33:09Z"
+		},
+		{
+			"checksumSHA1": "DEJ5NNnoGdU0S/C+yQXTkRAuSjw=",
+			"path": "github.com/kataras/go-template/handlebars",
+			"revision": "a4a986b413e8d88ebd894b4a3e327314069f2439",
+			"revisionTime": "2017-03-09T13:33:09Z"
+		},
+		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
+		},
+		{
+			"checksumSHA1": "TroUrCnO7mVi4ZB+I5t4gXJZdE0=",
+			"path": "github.com/subosito/gotenv",
+			"revision": "009e1f9581dc712aba5682a279dee155ca3eeded",
+			"revisionTime": "2017-01-20T14:09:13Z"
+		},
+		{
+			"checksumSHA1": "1D8GzeoFGUs5FZOoyC2DpQg8c5Y=",
+			"path": "gopkg.in/mgo.v2",
+			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
+			"revisionTime": "2016-08-18T02:01:20Z"
+		},
+		{
+			"checksumSHA1": "YsB2DChSV9HxdzHaKATllAUKWSI=",
+			"path": "gopkg.in/mgo.v2/bson",
+			"revision": "3f83fa5005286a7fe593b055f0d7771a7dce4655",
+			"revisionTime": "2016-08-18T02:01:20Z"
+		}
+	],
 	"rootPath": "taskfocus"
 }
