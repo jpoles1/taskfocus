@@ -56,11 +56,28 @@ func socketAddCard(data string, h *Hub) {
 		h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
 	}
 }
+func socketDeleteCard(data string, h *Hub) {
+	type CardData struct {
+		CardID  string
+		WallID  string
+		BoardID string
+	}
+	var cardData CardData
+	err := json.Unmarshal([]byte(data), &cardData)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("Delete Card", cardData)
+	kw := servKanbanData.WallList[cardData.WallID]
+	kw.deleteCard(cardData.BoardID, cardData.CardID)
+	servKanbanData.WallList[cardData.WallID] = kw
+	h.broadcastAll([]byte("deleteCard ~ ~ " + data))
+}
 func socketAddBoard(data string, h *Hub) {
 	type BoardData struct {
 		ID     string
 		WallID string
-		Title  string
+		Name   string
 	}
 	var boardData BoardData
 	err := json.Unmarshal([]byte(data), &boardData)
@@ -68,7 +85,7 @@ func socketAddBoard(data string, h *Hub) {
 		log.Println(err)
 	}
 	fmt.Println("Add Board", boardData)
-	newBoard := KanbanBoard{"0", 0, boardData.Title, map[string]KanbanCard{}}
+	newBoard := KanbanBoard{"0", 0, boardData.Name, map[string]KanbanCard{}}
 	kw := servKanbanData.WallList[boardData.WallID]
 	boardData.ID = kw.addBoard(newBoard)
 	fmt.Println(boardData)

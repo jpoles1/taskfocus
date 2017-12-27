@@ -41,11 +41,15 @@ $(function() {
           "title": newCard.Title
         })
       }
+      if (msgsplit[0] == "deleteCard") {
+        card = JSON.parse(msgsplit[1])
+        app.deleteCard(card.BoardID, card.CardID)
+      }
       if (msgsplit[0] == "addBoard") {
         newBoard = JSON.parse(msgsplit[1])
         console.log("Brd:", newBoard)
         console.log(app.boardList)
-        app.addBoard(newBoard.ID, newBoard.Title)
+        app.addBoard(newBoard.ID, newBoard.Name)
       }
       if (msgsplit[0] == "changeBoardName") {
         newBoard = JSON.parse(msgsplit[1])

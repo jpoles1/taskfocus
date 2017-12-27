@@ -16,6 +16,9 @@ vueInit = function(conn, boardData) {
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
         setTimeout(this.refreshEvents, 200)
       },
+      deleteCard: function(boardID, cardID) {
+        Vue.delete(this.boardList[parseInt(boardID)].item, cardID)
+      },
       getCardArray: function(boardID) {
         cardArray = Object.values(this.boardList[boardID]["item"])
         cardArray.sort(function(a, b) {
@@ -47,7 +50,7 @@ vueInit = function(conn, boardData) {
       moveCardBoard: function(cardID, originBoardID, destBoardID) {
         console.log("moving board:", this.boardList[parseInt(originBoardID)].item[cardID])
         Vue.set(this.boardList[parseInt(destBoardID)]["item"], cardID, this.boardList[parseInt(originBoardID)].item[cardID])
-        delete this.boardList[parseInt(originBoardID)].item[cardID]
+        Vue.delete(this.boardList[parseInt(originBoardID)].item, cardID)
         //Change Card from one board to another
       },
       moveCardOrder: function(cardID, destBoardID, orderBefore, orderAfter) {
@@ -98,10 +101,13 @@ vueInit = function(conn, boardData) {
         })
 
         function submitAddCardForm(el) {
+          taskTitle = $(el).parents().children(".kanban-add-textarea").first().val()
+          if ($.trim(taskTitle) == "") {
+            return
+          }
           console.log("ADD")
           contObj = $(el).parents().eq(2)
           boardID = contObj.attr("data-id")
-          taskTitle = $(el).parents().children(".kanban-add-textarea").first().val()
           conn.send("addCard ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             BoardID: boardID,
@@ -123,14 +129,14 @@ vueInit = function(conn, boardData) {
         })
 
         function submitAddBoardForm(el) {
-          title = $(el).parent().children("input").first().val()
-          if ($.trim(title) == "") {
+          name = $(el).parent().children("input").first().val()
+          if ($.trim(name) == "") {
             return
           }
           console.log("Adding new board")
           conn.send("addBoard ~ ~ " + JSON.stringify({
             WallID: urlWallID,
-            Title: title
+            Name: name
           }))
           $(el).siblings(".cancel").click()
         }
@@ -178,12 +184,23 @@ vueInit = function(conn, boardData) {
           console.log("Changing title")
           $(el).parent().parent().children().show()
           $(el).parent().hide()
-          conn.send("changeCardTitle ~ ~ " + JSON.stringify({
-            WallID: urlWallID,
-            CardID: cardID,
-            BoardID: boardID,
-            Title: title
-          }))
+          if ($.trim(title) == "") {
+            if (confirm("Confirm Card Deletion:")) {
+              conn.send("deleteCard ~ ~ " + JSON.stringify({
+                WallID: urlWallID,
+                CardID: cardID,
+                BoardID: boardID,
+              }))
+            }
+          } else {
+            conn.send("changeCardTitle ~ ~ " + JSON.stringify({
+              WallID: urlWallID,
+              CardID: cardID,
+              BoardID: boardID,
+              Title: title
+            }))
+          }
+
         }
         $(".kanban-card-title-form textarea").off("keydown").keydown(function(e) {
           if (e.ctrlKey && e.keyCode == 13) {

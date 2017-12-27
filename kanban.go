@@ -74,6 +74,12 @@ func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {
 	updateWall(kw.ID, kw)
 	return kc.ID, kc.Order
 }
+
+//Cannot get accurate card ct, aka index...
+func (kw *KanbanWall) deleteCard(boardID string, cardID string) {
+	delete(kw.BoardList[boardID].CardList, cardID)
+	updateWall(kw.ID, kw)
+}
 func (kw *KanbanWall) moveCardBoard(cardID string, originBoardID string, destBoardID string) {
 	kw.BoardList[destBoardID].CardList[cardID] = kw.BoardList[originBoardID].CardList[cardID]
 	delete(kw.BoardList[originBoardID].CardList, cardID)
