@@ -13,13 +13,13 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-item {
   border-radius: 3px;
 }
-.kanban-add {
+.kanban-add, .kanban-addboard-btn {
   padding: 15px;
   margin-bottom: 0;
   border-radius: 3px;
 }
-.kanban-add:hover{
-  background: #fff;
+.kanban-add:hover, .kanban-addboard-btn:hover{
+  background: #f9f9f9;
 }
 .kaban-card-title{
   font-size: 16px;
@@ -36,4 +36,7 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 }
 .kanban-add-btn{
   margin-left: 2px;
+}
+.kanban-wall-name, .kanban-board-title, .kanban-card-title, .kanban-add{
+  cursor: pointer;
 }

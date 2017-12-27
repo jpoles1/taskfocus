@@ -7,6 +7,9 @@
         <button type="submit">Save</button>
         <a class="button error cancel">X</a>
       </span>
+      <div style="float: right; align: right; padding-right: 10px; cursor: pointer">
+        <a onclick="alert('Settings')"><i class="fas fa-cog"></i></a>
+      </div>
     </h2>
   </center>
   <div id="kanban-outer-container" style="min-height: 100%; width: 100%; overflow-x: scroll;">
@@ -46,7 +49,7 @@
       </div>
       <div class='kanban-board' :style="{'width': boardWidth+'px', 'margin-left': gutter+'px', 'margin-right': gutter+'px'}">
         <header class='kanban-board-header'>
-          <a class='kanban-addboard-btn'>+ Add Board</a>
+          <div class='kanban-addboard-btn'><b>+ Add Board</b></div>
           <div class='kanban-addboard-form' style="display: none">
             <input type="text" placeholder="Add Board"></input>
             <br>
@@ -66,3 +69,4 @@
 <script src="/res/socket.js"></script>
 <script src="/res/kanban.js"></script>
 <script src="/res/main.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
