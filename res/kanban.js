@@ -2,6 +2,15 @@ vueInit = function(conn, boardData) {
   var drake, drakeBoard
   var boardData = Object.values(JSON.parse(boardData))
   console.log("Populating Data:", boardData)
+
+  function showError(errmsg) {
+    $.growl.error({
+      message: errmsg,
+      location: "br",
+      delayOnHover: false,
+      duration: 1500
+    })
+  }
   var app = new Vue({
     el: '#jkanban',
     data: {
@@ -101,6 +110,10 @@ vueInit = function(conn, boardData) {
         //Adding a wall
         $(".kanban-addwall-btn").off("click").click(function() {
           var wallName = prompt("Name of New Wall")
+          if (wallName == "") {
+            showError("Cannot create wall with no name.")
+            return
+          }
           conn.send("addWall ~ ~ " + JSON.stringify({
             AccountID: urlAccountID,
             WallName: wallName
@@ -118,6 +131,7 @@ vueInit = function(conn, boardData) {
         function submitChangeWallName(el) {
           name = $(el).parent().children("input").first().val()
           if ($.trim(name) == "") {
+            showError("Cannot set wall to blank name.")
             return
           }
           console.log("Changing Wall Name")
@@ -147,6 +161,7 @@ vueInit = function(conn, boardData) {
         function submitAddCardForm(el) {
           taskTitle = $(el).parents().children(".kanban-add-textarea").first().val()
           if ($.trim(taskTitle) == "") {
+            showError("Cannot create blank card.")
             return
           }
           console.log("ADD")
@@ -176,6 +191,7 @@ vueInit = function(conn, boardData) {
         function submitAddBoardForm(el) {
           name = $(el).parent().children("input").first().val()
           if ($.trim(name) == "") {
+            showError("Cannot create board with no name.")
             return
           }
           console.log("Adding new board")
@@ -202,6 +218,7 @@ vueInit = function(conn, boardData) {
         function submitBoardNameForm(el) {
           name = $(el).parent().children("input").first().val()
           if ($.trim(name) == "") {
+            showError("Cannot set board to blank name.")
             return
           }
           contObj = $(el).parents().eq(2)
