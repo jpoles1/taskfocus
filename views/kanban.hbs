@@ -25,15 +25,18 @@
           </div>
         </header>
         <main class="kanban-drag">
-          <div class="kanban-item" v-for="card in getCardArray(board.id)" :data-eid="card.id" :data-order="card.order">
+          <div class="kanban-item" v-for="card in getCardArray(board.id)" :data-eid="card.id" :data-order="card.order" style="position: relative;">
             <!--\{{card.id}} - \{{card.order}}
             <br>-->
-            <div class="kanban-card-title" style="white-space: pre-wrap;">\{{card.title}}</div>
-            <div class='kanban-card-title-form' style="display: none">
+            <div class="kanban-card-title" style="white-space: pre-wrap;" v-html="linkify(card.title)"></div>
+            <div class='kanban-card-title-form' style="display: none;">
               <textarea class="kanban-card-title-textarea" :value="card.title" :defaultvalue="card.title"></textarea>
               <br>
               <button type="submit">Save</button>
               <a class="cancel" style="font-size: 24px; float: right;">X</a>
+            </div>
+            <div style="position: absolute; top: 5px; right: -20px; background-color: #fff; color: black; padding: 3px;">
+              <i class="fas fa-edit"></i>              
             </div>
           </div>
         </main>

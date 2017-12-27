@@ -22,6 +22,21 @@ vueInit = function(conn, boardData) {
       boardList: boardData
     },
     methods: {
+      linkify: function(text) {
+        if (text) {
+          text = text.replace(
+            /((https?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi,
+            function(url) {
+              var full_url = url;
+              if (!full_url.match('^https?:\/\/')) {
+                full_url = 'http://' + full_url;
+              }
+              return '<a href="' + full_url + '" target="_blank">' + url + '</a>';
+            }
+          );
+        }
+        return text;
+      },
       addCard: function(boardID, card) {
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
         setTimeout(this.refreshEvents, 200)
@@ -110,7 +125,7 @@ vueInit = function(conn, boardData) {
         //Adding a wall
         $(".kanban-addwall-btn").off("click").click(function() {
           var wallName = prompt("Name of New Wall")
-          if (wallName == "") {
+          if (wallName == "" || wallName == null) {
             showError("Cannot create wall with no name.")
             return
           }
