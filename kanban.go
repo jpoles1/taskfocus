@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+//KanbanServer holds the data for current accounts and walls for all available/loaded accounts
 type KanbanServer struct {
 	WallList    map[string]KanbanWall
 	AccountList map[string]KanbanAccount
@@ -25,23 +26,20 @@ func (ks *KanbanServer) addWall(accountID string, wallName string) string {
 	return wallID
 }
 
+//KanbanAccount holds user data. Contains a list of IDs for walls belonging to the user
 type KanbanAccount struct {
 	ID         string
 	Email      string
 	Uname      string
 	WallIDList []string
 }
+
+//KanbanWall holds the data for a wall; a collection of KanbanBoardss containing KanbanCards.
 type KanbanWall struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	CardCt    int
 	BoardList map[string]KanbanBoard `json:"boardList"`
-}
-type KanbanBoard struct {
-	ID       string                `json:"id"`
-	Order    int                   `json:"order"`
-	Name     string                `json:"name"`
-	CardList map[string]KanbanCard `json:"item"`
 }
 
 func (kw *KanbanWall) addBoard(kb KanbanBoard) string {
@@ -100,6 +98,15 @@ func (kw *KanbanWall) moveCardOrder(cardID string, destBoardID string, orderBefo
 	updateWall(kw.ID, kw)
 }
 
+//KanbanBoard holds the data for a board; a collection of KanbanCards, belonging to a KanbanWall.
+type KanbanBoard struct {
+	ID       string                `json:"id"`
+	Order    int                   `json:"order"`
+	Name     string                `json:"name"`
+	CardList map[string]KanbanCard `json:"item"`
+}
+
+//KanbanCard holds the data for a card; an entry in a KanbanBoard
 type KanbanCard struct {
 	ID        string `json:"id"`
 	Order     int    `json:"order"`
@@ -108,6 +115,7 @@ type KanbanCard struct {
 	checkList map[string]KanbanTask
 }
 
+//KanbanTask holds the data on a checklist item belonging to a KanbanCard
 type KanbanTask struct {
 	ID      string
 	Details string
