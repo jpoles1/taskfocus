@@ -25,6 +25,12 @@ func (ks *KanbanServer) addWall(accountID string, wallName string) string {
 	createWall(kw)
 	return wallID
 }
+func (ks *KanbanServer) changeWallName(wallID string, wallName string) {
+	kw := ks.WallList[wallID]
+	kw.Name = wallName
+	ks.WallList[wallID] = kw
+	updateWall(wallID, &kw)
+}
 
 //KanbanAccount holds user data. Contains a list of IDs for walls belonging to the user
 type KanbanAccount struct {

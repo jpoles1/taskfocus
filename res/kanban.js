@@ -3,8 +3,9 @@ vueInit = function(conn, boardData) {
   var boardData = Object.values(JSON.parse(boardData))
   console.log("Populating Data:", boardData)
   var app = new Vue({
-    el: '#myKanban',
+    el: '#jkanban',
     data: {
+      wallName: urlWallName,
       wallWidth: 800,
       boardWidth: 300,
       gutter: 15,
@@ -35,6 +36,10 @@ vueInit = function(conn, boardData) {
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
         setTimeout(this.refreshDrag, 200)
+      },
+      changeWallName: function(wallID, name) {
+        console.log("WALLSET to ", name)
+        this.wallName = name;
       },
       changeBoardName: function(boardID, name) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
@@ -73,6 +78,7 @@ vueInit = function(conn, boardData) {
       },
       refreshEvents: function() {
         autosize($("textarea"))
+        //Closes the current form
         $(".cancel").off("click").click(function() {
           console.log("cancel")
           $(this).parent().parent().children().show()
@@ -85,12 +91,14 @@ vueInit = function(conn, boardData) {
             }
           })
         })
+        //Keyboard Shortcut (esc): causes form to close if pressed on an input
         //This .off() statement clears keydown events for all subsequent textarea,input
         $("textarea, input").off("keydown").keydown(function(event) {
           if (event.keyCode == 27) {
             $(this).siblings(".cancel").click()
           }
         })
+        //Adding a wall
         $(".kanban-addwall-btn").off("click").click(function() {
           var wallName = prompt("Name of New Wall")
           conn.send("addWall ~ ~ " + JSON.stringify({
@@ -98,6 +106,36 @@ vueInit = function(conn, boardData) {
             WallName: wallName
           }))
         })
+        //Changing wall name
+        $(".kanban-wall-name").off("click").click(function() {
+          contObj = $(this).parent().parent()
+          boardId = contObj.attr("data-id")
+          $(this).siblings().show()
+          $(this).hide()
+          $(this).siblings("div").children("textarea").focus()
+        })
+
+        function submitChangeWallName(el) {
+          name = $(el).parent().children("input").first().val()
+          if ($.trim(name) == "") {
+            return
+          }
+          console.log("Changing Wall Name")
+          conn.send("changeWallName ~ ~ " + JSON.stringify({
+            WallID: urlWallID,
+            Name: name
+          }))
+          $(el).siblings(".cancel").click()
+        }
+        $(".kanban-wall-name-form button").off("click").click(function() {
+          submitChangeWallName(this)
+        })
+        $(".kanban-wall-name-form input").keydown(function(e) {
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitChangeWallName(this)
+          }
+        });
+        //Adding Cards
         $(".kanban-add").off("click").click(function() {
           contObj = $(this).parent().parent()
           boardId = contObj.attr("data-id")

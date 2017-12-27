@@ -33,6 +33,19 @@ func socketAddWall(data string, h *Hub) {
 	outData, _ := json.Marshal(wallData)
 	h.broadcastAll([]byte("addWall ~ ~ " + string(outData)))
 }
+func socketChangeWallName(data string, h *Hub) {
+	type WallData struct {
+		WallID string
+		Name   string
+	}
+	var wallData WallData
+	err := json.Unmarshal([]byte(data), &wallData)
+	if err != nil {
+		log.Println(err)
+	}
+	servKanbanData.changeWallName(wallData.WallID, wallData.Name)
+	h.broadcastAll([]byte("changeWallName ~ ~ " + data))
+}
 func socketAddCard(data string, h *Hub) {
 	type CardData struct {
 		ID      string

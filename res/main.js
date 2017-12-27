@@ -55,6 +55,12 @@ $(function() {
         newWall = JSON.parse(msgsplit[1])
         window.location = "/focus/" + urlAccountID + "/" + newWall.WallID
       }
+      if (msgsplit[0] == "changeWallName") {
+        newWall = JSON.parse(msgsplit[1])
+        console.log("Change Wall Name:", newWall)
+        console.log(app.boardList)
+        app.changeWallName(newWall.WallID, newWall.Name)
+      }
       if (msgsplit[0] == "changeBoardName") {
         newBoard = JSON.parse(msgsplit[1])
         console.log("Change Board Name:", newBoard)
