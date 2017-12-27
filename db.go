@@ -13,7 +13,7 @@ var mongoURI string
 var mongoDB *mgo.Session
 
 func mongoLoad() {
-	mongoURI = os.Getenv("MONGO_URI")
+	mongoURI = os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
 		log.Fatal("No MongoDB URI supplied in .env config file!")
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
@@ -49,6 +50,9 @@ func main() {
 	portPtr := flag.String("p", "3333", "Server Port")
 	flag.Parse()
 	port := ":" + *portPtr
+	if os.Getenv("PORT") != "" {
+		port = ":" + os.Getenv("PORT")
+	}
 	color.Green("Starting server on port: %s", port[1:])
 	color.Green("Access server locally at: http://127.0.0.1:%s", port[1:])
 	//Handling system signals
