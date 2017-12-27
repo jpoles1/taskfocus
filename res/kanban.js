@@ -353,6 +353,7 @@ vueInit = function(conn, boardData) {
       init: function() {
         console.log("init")
         console.log(this.$el)
+        $(this.$el).show()
       }
     }
   })
