@@ -47,11 +47,11 @@ $(function() {
         console.log(app.boardList)
         app.addBoard(newBoard.ID, newBoard.Title)
       }
-      if (msgsplit[0] == "changeBoardTitle") {
+      if (msgsplit[0] == "changeBoardName") {
         newBoard = JSON.parse(msgsplit[1])
-        console.log("Change Board Title:", newBoard)
+        console.log("Change Board Name:", newBoard)
         console.log(app.boardList)
-        app.changeBoardTitle(newBoard.BoardID, newBoard.Title)
+        app.changeBoardName(newBoard.BoardID, newBoard.Name)
       }
       if (msgsplit[0] == "changeCardTitle") {
         newCard = JSON.parse(msgsplit[1])

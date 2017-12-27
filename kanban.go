@@ -52,9 +52,9 @@ func (kw *KanbanWall) addBoard(kb KanbanBoard) string {
 	updateWall(kw.ID, kw)
 	return kb.ID
 }
-func (kw *KanbanWall) changeBoardTitle(boardID string, title string) {
+func (kw *KanbanWall) changeBoardName(boardID string, name string) {
 	kb := kw.BoardList[boardID]
-	kb.Name = title
+	kb.Name = name
 	kw.BoardList[boardID] = kb
 	updateWall(kw.ID, kw)
 }

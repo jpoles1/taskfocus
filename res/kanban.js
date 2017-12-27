@@ -14,6 +14,7 @@ vueInit = function(conn, boardData) {
     methods: {
       addCard: function(boardID, card) {
         Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+        setTimeout(this.refreshEvents, 200)
       },
       getCardArray: function(boardID) {
         cardArray = Object.values(this.boardList[boardID]["item"])
@@ -32,9 +33,9 @@ vueInit = function(conn, boardData) {
         setTimeout(this.refreshEvents, 200)
         setTimeout(this.refreshDrag, 200)
       },
-      changeBoardTitle: function(boardID, title) {
+      changeBoardName: function(boardID, name) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
-        this.boardList[boardID].title = title
+        this.boardList[boardID].name = name
         this.calcWidth()
         setTimeout(this.refreshEvents, 200)
       },
@@ -146,8 +147,8 @@ vueInit = function(conn, boardData) {
           $(this).hide()
         })
         $(".kanban-board-title-form button").off("click").click(function() {
-          title = $(this).siblings("input").first().val()
-          if ($.trim(title) == "") {
+          name = $(this).siblings("input").first().val()
+          if ($.trim(name) == "") {
             return
           }
           contObj = $(this).parents().eq(2)
@@ -156,10 +157,10 @@ vueInit = function(conn, boardData) {
           console.log("Changing title")
           $(this).parent().parent().children().show()
           $(this).parent().hide()
-          conn.send("changeBoardTitle ~ ~ " + JSON.stringify({
+          conn.send("changeBoardName ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             BoardID: boardID,
-            Title: title
+            Name: name
           }))
         })
         $(".kanban-card-title").off("click").click(function() {

@@ -75,22 +75,22 @@ func socketAddBoard(data string, h *Hub) {
 	broadcast, _ := json.Marshal(boardData)
 	h.broadcastAll([]byte("addBoard ~ ~ " + string(broadcast)))
 }
-func socketChangeBoardTitle(data string, h *Hub) {
-	type TitleData struct {
+func socketChangeBoardName(data string, h *Hub) {
+	type NameData struct {
 		WallID  string
 		BoardID string
-		Title   string
+		Name    string
 	}
-	var titleData TitleData
-	err := json.Unmarshal([]byte(data), &titleData)
+	var nameData NameData
+	err := json.Unmarshal([]byte(data), &nameData)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("Change Board Title:", titleData)
-	kw := servKanbanData.WallList[titleData.WallID]
-	kw.changeBoardTitle(titleData.Title, titleData.BoardID)
-	fmt.Println(titleData)
-	h.broadcastAll([]byte("changeBoardTitle ~ ~ " + data))
+	fmt.Println("Change Board Name:", nameData)
+	kw := servKanbanData.WallList[nameData.WallID]
+	kw.changeBoardName(nameData.BoardID, nameData.Name)
+	servKanbanData.WallList[nameData.WallID] = kw
+	h.broadcastAll([]byte("changeBoardName ~ ~ " + data))
 }
 func socketChangeCardTitle(data string, h *Hub) {
 	type TitleData struct {
