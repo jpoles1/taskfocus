@@ -1,6 +1,7 @@
 {
 	"comment": "",
 	"ignore": "test",
+	"heroku.goVersion": "1.6.2",
 	"package": [
 		{
 			"path": "appengine",
@@ -55,10 +56,22 @@
 			"revisionTime": "2017-11-13T18:07:20Z"
 		},
 		{
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
 			"checksumSHA1": "3HFUqdhX43kNPJe18WJWCVkthKI=",
 			"path": "github.com/gorilla/mux",
 			"revision": "2d5fef06b891c971b14aa6f71ca5ab6c03a36e0e",
 			"revisionTime": "2017-11-09T03:54:02Z"
+		},
+		{
+			"checksumSHA1": "ucTBCc7dDRKLGPsYfAzu/Gq63qA=",
+			"path": "github.com/gorilla/securecookie",
+			"revision": "e59506cc896acb7f7bf732d4fdf5e25f7ccd8983",
+			"revisionTime": "2017-02-24T19:38:04Z"
 		},
 		{
 			"checksumSHA1": "dxwmtflRNX8Q+gtB5EchmMwFnpQ=",
