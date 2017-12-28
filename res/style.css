@@ -7,6 +7,9 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-drag{
   padding-right: 25px !important;
 }
+.kanban-board{
+  border-radius: 3px;
+}
 .kanban-board header{
   border-bottom: .8px solid #aaa;
 }

@@ -37,10 +37,14 @@ func faviconServer(w http.ResponseWriter, r *http.Request) {
 func homePage(w http.ResponseWriter, r *http.Request) {
 	renderPage("home.hbs", map[string]string{}, map[string]interface{}{}, w)
 }
+
+//Takes an account ID, and request containing a session, confirms they match
 func userPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
 	accountID := urlparams["accountID"]
-	fmt.Println("UID", accountID, servKanbanData.AccountList)
+	if !validateAccount(accountID, w, r) {
+		return
+	}
 	if val, ok := servKanbanData.AccountList[accountID]; ok {
 		fmt.Println(val)
 		renderPage(
@@ -54,12 +58,38 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 		renderRedirect("Invalid UID", "/", w)
 	}
 }
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+func validateAccount(accountID string, w http.ResponseWriter, r *http.Request) bool {
+	session, _ := store.Get(r, "gAuth")
+	sessionID := session.Values["email"]
+	if sessionID == nil {
+		renderRedirect("Login required.", "/api/login", w)
+		return false
+	}
+	sessionIDString := string(session.Values["email"].(string))
+	if accountID != sessionIDString {
+		renderRedirect("Access Denied.", "/focus/"+sessionIDString, w)
+		return false
+	}
+	return true
+}
 func wallPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
 	accountID := urlparams["accountID"]
 	wallID := urlparams["wallID"]
+	if !validateAccount(accountID, w, r) {
+		return
+	}
 	if _, ok := servKanbanData.AccountList[accountID]; ok {
-		if _, ok := servKanbanData.WallList[wallID]; ok {
+		_, ok := servKanbanData.WallList[wallID]
+		if ok && contains(servKanbanData.AccountList[accountID].WallIDList, wallID) {
 			renderPage(
 				"kanban.hbs",
 				map[string]string{"nav": "nav.hbs", "modal": "modal.hbs"},

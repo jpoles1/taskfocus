@@ -11,10 +11,23 @@ type KanbanServer struct {
 	AccountList map[string]KanbanAccount
 }
 
+func (ks *KanbanServer) addAccount(userEmail string) string {
+	accountID := strconv.Itoa(len(ks.AccountList))
+	newAccount := KanbanAccount{accountID, userEmail, []string{}}
+	ks.AccountList[userEmail] = newAccount
+	createAccount(newAccount)
+	return accountID
+}
+func (ks *KanbanServer) updateAccountWalls(accountEmail string, wallID string) {
+	account := ks.AccountList[accountEmail]
+	account.WallIDList = append(account.WallIDList, wallID)
+	ks.AccountList[accountEmail] = account
+	updateAccount(account, accountEmail)
+}
 func (ks *KanbanServer) userWalls(accountID string) []KanbanWall {
 	var userWalls []KanbanWall
-	for _, val := range ks.WallList {
-		userWalls = append(userWalls, val)
+	for _, val := range ks.AccountList[accountID].WallIDList {
+		userWalls = append(userWalls, ks.WallList[val])
 	}
 	return userWalls
 }
@@ -23,6 +36,7 @@ func (ks *KanbanServer) addWall(accountID string, wallName string) string {
 	ks.WallList[wallID] = KanbanWall{wallID, wallName, 0, map[string]KanbanBoard{}}
 	kw := ks.WallList[wallID]
 	createWall(kw)
+	ks.updateAccountWalls(accountID, wallID)
 	return wallID
 }
 func (ks *KanbanServer) changeWallName(wallID string, wallName string) {
@@ -36,7 +50,6 @@ func (ks *KanbanServer) changeWallName(wallID string, wallName string) {
 type KanbanAccount struct {
 	ID         string
 	Email      string
-	Uname      string
 	WallIDList []string
 }
 

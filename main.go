@@ -21,6 +21,7 @@ var servKanbanData = KanbanServer{}
 func init() {
 	gotenv.Load()
 	mongoLoad()
+	initOAuth()
 }
 func main() {
 	// Process handlebars templates
@@ -40,6 +41,8 @@ func main() {
 	router.HandleFunc("/focus/{accountID}/{wallID}", wallPage).Methods("GET")
 	//API routing
 	router.HandleFunc("/api/exportWall", apiExportWall).Methods("GET")
+	router.HandleFunc("/api/login", loginHandler).Methods("GET")
+	router.HandleFunc("/api/googleOAuth", authHandler).Methods("GET")
 	//API sockets
 	hub := newHub()
 	go hub.run()
