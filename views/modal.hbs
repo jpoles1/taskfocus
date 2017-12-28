@@ -1,13 +1,13 @@
 <div id="edit-modal" class="modal">
   <input id="edit-modal-btn" type="checkbox" />
   <label for="edit-modal-btn" class="overlay"></label>
-  <article>
+  <article style="min-width: 60%;">
     <header>
       <h3>\{{title}}</h3>
       <label for="edit-modal-btn" class="close">&times;</label>
     </header>
     <section class="content">
-      <textarea v-model="details"></textarea>
+      <textarea v-model="details" placeholder="Add details here..."></textarea>
     </section>
     <footer>
       <a class="button" href="#" style="float: right;" id="edit-modal-save">Save Changes</a>
