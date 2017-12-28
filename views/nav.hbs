@@ -1,0 +1,16 @@
+{{#if accountID}}
+  <nav class="demo" style="position: absolute;">
+    <a href="/{{#if accountID}}focus/{{accountID}}{{/if}}" class="brand" style="margin-right: 20px; border-right: .5px solid #333;">TaskFocus</a>
+
+    <input id="bmenub" type="checkbox" class="show">
+    <label for="bmenub" class="burger pseudo button" style="font-weight: bold">&#9776;</label>
+
+
+    <div class="menu" style="float: left">
+      {{#each userWalls}}
+        <a href="/focus/{{accountID}}/{{this.ID}}" class="pseudo button">{{this.Name}}</a>
+      {{/each}}
+      <a class="kanban-addwall-btn pseudo button">+ Add Wall</a>
+    </div>
+  </nav>
+{{/if}}

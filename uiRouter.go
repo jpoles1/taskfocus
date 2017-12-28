@@ -10,7 +10,16 @@ import (
 
 var renderOpts = map[string]interface{}{"layout": "layouts/base.hbs"}
 
-func renderPage(templateName string, pageData map[string]interface{}, w http.ResponseWriter) {
+func renderPage(templateName string, partials map[string]string, pageData map[string]interface{}, w http.ResponseWriter) {
+	var partialData = map[string]string{}
+	for partialName, partialFile := range partials {
+		tempOut, err := template.ExecuteString(partialFile, pageData)
+		if err != nil {
+			tempOut = "Uh oh, template could not be loaded:" + err.Error()
+		}
+		partialData[partialName] = tempOut
+	}
+	pageData["partials"] = partialData
 	err := template.ExecuteWriter(w, templateName, pageData, renderOpts) // yes you can pass simple maps instead of structs
 	if err != nil {
 		w.Write([]byte(err.Error()))
@@ -26,7 +35,7 @@ func faviconServer(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "res/favicon.ico")
 }
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderPage("home.hbs", map[string]interface{}{}, w)
+	renderPage("home.hbs", map[string]string{}, map[string]interface{}{}, w)
 }
 func userPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
@@ -34,7 +43,13 @@ func userPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("UID", accountID, servKanbanData.AccountList)
 	if val, ok := servKanbanData.AccountList[accountID]; ok {
 		fmt.Println(val)
-		renderPage("user.hbs", map[string]interface{}{"accountID": accountID, "userWalls": servKanbanData.userWalls(accountID)}, w)
+		renderPage(
+			"user.hbs",
+			map[string]string{"nav": "nav.hbs"},
+			map[string]interface{}{
+				"partials":  map[string]interface{}{},
+				"accountID": accountID, "userWalls": servKanbanData.userWalls(accountID),
+			}, w)
 	} else {
 		renderRedirect("Invalid UID", "/", w)
 	}
@@ -45,12 +60,16 @@ func wallPage(w http.ResponseWriter, r *http.Request) {
 	wallID := urlparams["wallID"]
 	if _, ok := servKanbanData.AccountList[accountID]; ok {
 		if _, ok := servKanbanData.WallList[wallID]; ok {
-			renderPage("kanban.hbs", map[string]interface{}{
-				"accountID": accountID,
-				"wallID":    wallID,
-				"wallName":  servKanbanData.WallList[wallID].Name,
-				"userWalls": servKanbanData.userWalls(accountID),
-			}, w)
+			renderPage(
+				"kanban.hbs",
+				map[string]string{"nav": "nav.hbs"},
+				map[string]interface{}{
+					"partials":  map[string]interface{}{},
+					"accountID": accountID,
+					"wallID":    wallID,
+					"wallName":  servKanbanData.WallList[wallID].Name,
+					"userWalls": servKanbanData.userWalls(accountID),
+				}, w)
 		} else {
 			renderRedirect("Invalid WallID", "/focus/"+accountID, w)
 		}

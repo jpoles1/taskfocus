@@ -117,7 +117,7 @@ type KanbanCard struct {
 	ID        string `json:"id"`
 	Order     int    `json:"order"`
 	Title     string `json:"title"`
-	details   string
+	Details   string `json:"details"`
 	checkList map[string]KanbanTask
 }
 

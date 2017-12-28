@@ -1,3 +1,8 @@
+Executables:
+taskfocus.sh (linux)
+taskfocus.exe (windows 32/64)
+
+Code Organization:
 kanban.go - Contains structs + methods for Kanban elements (Walls, Boards, Cards, etc.)
 socketHub.go - Receive and route socket events
 apiSocket.go - Contains the response functions for socket events
