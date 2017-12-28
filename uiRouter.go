@@ -25,8 +25,8 @@ func renderPage(templateName string, partials map[string]string, pageData map[st
 		w.Write([]byte(err.Error()))
 	}
 }
-func renderRedirect(redirMsg string, redirUrl string, w http.ResponseWriter) {
-	err := template.ExecuteWriter(w, "redirect.hbs", map[string]interface{}{"redirMsg": redirMsg, "redirUrl": redirUrl}, renderOpts) // yes you can pass simple maps instead of structs
+func renderRedirect(redirMsg string, redirURL string, w http.ResponseWriter) {
+	err := template.ExecuteWriter(w, "redirect.hbs", map[string]interface{}{"redirMsg": redirMsg, "redirURL": redirURL}, renderOpts) // yes you can pass simple maps instead of structs
 	if err != nil {
 		w.Write([]byte(err.Error()))
 	}
