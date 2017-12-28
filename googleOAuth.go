@@ -71,10 +71,6 @@ func initOAuth() {
 	}
 }
 
-func getLoginURL(state string) string {
-	return conf.AuthCodeURL(state)
-}
-
 func authHandler(w http.ResponseWriter, r *http.Request) {
 	// Handle the exchange code to initiate a transport.
 	session, _ := store.Get(r, "gAuth")
@@ -122,12 +118,4 @@ func authHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Existing account!", kanbanAccount)
 		renderRedirect("Opening your account", "/focus/"+userInfo.Email, w)
 	}
-}
-
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	state = randToken()
-	session, _ := store.Get(r, "gAuth")
-	session.Values["state"] = state
-	session.Save(r, w)
-	w.Write([]byte("<html><title>Golang Google</title> <body> <a href='" + getLoginURL(state) + "'><button>Login with Google!</button> </a> </body></html>"))
 }

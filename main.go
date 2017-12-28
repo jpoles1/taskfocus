@@ -41,7 +41,6 @@ func main() {
 	router.HandleFunc("/focus/{accountID}/{wallID}", wallPage).Methods("GET")
 	//API routing
 	router.HandleFunc("/api/exportWall", apiExportWall).Methods("GET")
-	router.HandleFunc("/api/login", loginHandler).Methods("GET")
 	router.HandleFunc("/api/googleOAuth", authHandler).Methods("GET")
 	//API sockets
 	hub := newHub()

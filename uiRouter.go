@@ -35,7 +35,17 @@ func faviconServer(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "res/favicon.ico")
 }
 func homePage(w http.ResponseWriter, r *http.Request) {
-	renderPage("home.hbs", map[string]string{}, map[string]interface{}{}, w)
+	state = randToken()
+	session, _ := store.Get(r, "gAuth")
+	var googleLoginURL string
+	if session.Values["email"] != nil {
+		googleLoginURL = "/focus/" + session.Values["email"].(string)
+	} else {
+		session.Values["state"] = state
+		session.Save(r, w)
+		googleLoginURL = conf.AuthCodeURL(state)
+	}
+	renderPage("home.hbs", map[string]string{}, map[string]interface{}{"googleLoginURL": googleLoginURL}, w)
 }
 
 //Takes an account ID, and request containing a session, confirms they match
