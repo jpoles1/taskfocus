@@ -49,6 +49,20 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 }
 
 //Takes an account ID, and request containing a session, confirms they match
+func validateAccount(accountID string, w http.ResponseWriter, r *http.Request) bool {
+	session, _ := store.Get(r, "gAuth")
+	sessionID := session.Values["email"]
+	if sessionID == nil {
+		renderRedirect("Login required.", "/", w)
+		return false
+	}
+	sessionIDString := string(session.Values["email"].(string))
+	if accountID != sessionIDString {
+		renderRedirect("Access Denied.", "/focus/"+sessionIDString, w)
+		return false
+	}
+	return true
+}
 func userPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)
 	accountID := urlparams["accountID"]
@@ -75,20 +89,6 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
-}
-func validateAccount(accountID string, w http.ResponseWriter, r *http.Request) bool {
-	session, _ := store.Get(r, "gAuth")
-	sessionID := session.Values["email"]
-	if sessionID == nil {
-		renderRedirect("Login required.", "/api/login", w)
-		return false
-	}
-	sessionIDString := string(session.Values["email"].(string))
-	if accountID != sessionIDString {
-		renderRedirect("Access Denied.", "/focus/"+sessionIDString, w)
-		return false
-	}
-	return true
 }
 func wallPage(w http.ResponseWriter, r *http.Request) {
 	urlparams := mux.Vars(r)

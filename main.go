@@ -42,6 +42,7 @@ func main() {
 	//API routing
 	router.HandleFunc("/api/exportWall", apiExportWall).Methods("GET")
 	router.HandleFunc("/api/googleOAuth", authHandler).Methods("GET")
+	router.HandleFunc("/api/logout", apiLogout).Methods("GET")
 	//API sockets
 	hub := newHub()
 	go hub.run()

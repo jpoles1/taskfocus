@@ -6,6 +6,13 @@ import (
 	"net/http"
 )
 
+func apiLogout(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "gAuth")
+	session.Values["state"] = nil
+	session.Values["email"] = nil
+	session.Save(r, w)
+	renderRedirect("Logging out...", "/", w)
+}
 func apiExportWall(w http.ResponseWriter, r *http.Request) {
 	jsontxt, err := json.Marshal(servKanbanData)
 	if err != nil {
