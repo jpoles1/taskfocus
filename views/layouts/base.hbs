@@ -22,6 +22,11 @@
     {{#if accountID}}
       <nav class="demo" style="position: absolute;">
         <a href="/{{#if accountID}}focus/{{accountID}}{{/if}}" class="brand" style="margin-right: 20px; border-right: .5px solid #333;">TaskFocus</a>
+
+        <input id="bmenub" type="checkbox" class="show">
+        <label for="bmenub" class="burger pseudo button">&#8801;</label>
+
+
         <div class="menu" style="float: left">
           {{#each userWalls}}
             <a href="/focus/{{accountID}}/{{this.ID}}" class="pseudo button">{{this.Name}}</a>
