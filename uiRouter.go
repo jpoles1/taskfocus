@@ -62,7 +62,7 @@ func wallPage(w http.ResponseWriter, r *http.Request) {
 		if _, ok := servKanbanData.WallList[wallID]; ok {
 			renderPage(
 				"kanban.hbs",
-				map[string]string{"nav": "nav.hbs"},
+				map[string]string{"nav": "nav.hbs", "modal": "modal.hbs"},
 				map[string]interface{}{
 					"partials":  map[string]interface{}{},
 					"accountID": accountID,

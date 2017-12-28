@@ -25,14 +25,15 @@ $(function() {
   }, function(evt) {
     msgsplit = evt.data.split(" ~ ~ ")
     if (msgsplit.length == 2) {
-      console.log("Msgtype:", msgsplit[0])
-      console.log("Msg:", msgsplit[1])
       if (msgsplit[0] == "init") {
         if (!initialized) {
-          app = vueInit(conn, msgsplit[1])
+          app = vueKanbanInit(conn, msgsplit[1])
           initialized = 1
         }
+        return
       }
+      console.log("Msgtype:", msgsplit[0])
+      console.log("Msg:", msgsplit[1])
       if (msgsplit[0] == "addCard") {
         newCard = JSON.parse(msgsplit[1])
         app.addCard(newCard.BoardID, {
@@ -71,6 +72,11 @@ $(function() {
         newCard = JSON.parse(msgsplit[1])
         console.log("Change Card Title:", newCard)
         app.changeCardTitle(newCard.BoardID, newCard.CardID, newCard.Title)
+      }
+      if (msgsplit[0] == "changeCardDetails") {
+        newCard = JSON.parse(msgsplit[1])
+        console.log("Change Card Details:", newCard)
+        app.changeCardDetails(newCard.BoardID, newCard.CardID, newCard.Details)
       }
       if (msgsplit[0] == "moveCard") {
         moveData = JSON.parse(msgsplit[1])

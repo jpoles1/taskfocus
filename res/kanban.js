@@ -1,7 +1,8 @@
-vueInit = function(conn, boardData) {
+vueKanbanInit = function(conn, boardData) {
   var drake, drakeBoard
   var boardData = Object.values(JSON.parse(boardData))
   console.log("Populating Data:", boardData)
+  var vueEditApp = vueEditInit(conn);
 
   function showError(errmsg) {
     $.growl.error({
@@ -22,6 +23,13 @@ vueInit = function(conn, boardData) {
       boardList: boardData
     },
     methods: {
+      startEdit: function(boardID, cardID) {
+        cardData = this.boardList[parseInt(boardID)].item[cardID]
+        vueEditApp.id = cardID
+        vueEditApp.boardID = boardID
+        vueEditApp.title = cardData.title
+        vueEditApp.details = cardData.details
+      },
       linkify: function(text) {
         if (text) {
           text = text.replace(
@@ -76,6 +84,11 @@ vueInit = function(conn, boardData) {
         this.boardList[boardID].item[cardID].title = title
         setTimeout(this.refreshEvents, 200)
       },
+      changeCardDetails: function(boardID, cardID, details) {
+        //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
+        this.boardList[boardID].item[cardID].details = details
+        setTimeout(this.refreshEvents, 200)
+      },
       moveCardBoard: function(cardID, originBoardID, destBoardID) {
         console.log("moving board:", this.boardList[parseInt(originBoardID)].item[cardID])
         Vue.set(this.boardList[parseInt(destBoardID)]["item"], cardID, this.boardList[parseInt(originBoardID)].item[cardID])
@@ -102,6 +115,13 @@ vueInit = function(conn, boardData) {
       },
       refreshEvents: function() {
         autosize($("textarea"))
+        //Open edit form
+        $(".card-edit-button").click(function() {
+          cardID = $(this).parent().attr("data-eid")
+          boardID = $(this).parents().eq(2).attr("data-id")
+          app.startEdit(boardID, cardID)
+          $("#edit-modal-btn").prop("checked", true);
+        })
         //Closes the current form
         $(".cancel").off("click").click(function() {
           console.log("cancel")
@@ -366,8 +386,6 @@ vueInit = function(conn, boardData) {
         });
       },
       init: function() {
-        console.log("init")
-        console.log(this.$el)
         $(this.$el).show()
       }
     }

@@ -68,6 +68,12 @@ func (kw *KanbanWall) changeCardTitle(title string, boardID string, cardID strin
 	kw.BoardList[boardID].CardList[cardID] = kc
 	updateWall(kw.ID, kw)
 }
+func (kw *KanbanWall) changeCardDetails(details string, boardID string, cardID string) {
+	kc := kw.BoardList[boardID].CardList[cardID]
+	kc.Details = details
+	kw.BoardList[boardID].CardList[cardID] = kc
+	updateWall(kw.ID, kw)
+}
 func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {
 	kb := kw.BoardList[boardID]
 	kc.ID = strconv.Itoa(kw.CardCt)
