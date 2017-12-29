@@ -30,6 +30,5 @@ $(function() {
       AccountID: urlAccountID,
       WallName: wallName
     }))
-    location.reload();
   })
 })

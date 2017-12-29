@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func socketInitWall(data string, h *Hub) {
+func socketInitWall(data string, c *Client) {
 	type InitData struct {
 		WallID string
 	}
@@ -16,9 +16,9 @@ func socketInitWall(data string, h *Hub) {
 		log.Println(err)
 	}
 	outData, _ := json.Marshal(servKanbanData.WallList[initData.WallID].BoardList)
-	h.broadcastAll([]byte("init ~ ~ " + string(outData)))
+	c.send <- []byte("init ~ ~ " + string(outData))
 }
-func socketAddWall(data string, h *Hub) {
+func socketAddWall(data string, c *Client) {
 	type WallData struct {
 		WallID    string
 		AccountID string
@@ -31,7 +31,7 @@ func socketAddWall(data string, h *Hub) {
 	}
 	wallData.WallID = servKanbanData.addWall(wallData.AccountID, wallData.WallName)
 	outData, _ := json.Marshal(wallData)
-	h.broadcastAll([]byte("addWall ~ ~ " + string(outData)))
+	c.send <- []byte("addWall ~ ~ " + string(outData))
 }
 func socketChangeWallName(data string, h *Hub) {
 	type WallData struct {

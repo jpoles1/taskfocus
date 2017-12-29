@@ -10,12 +10,16 @@ import (
 )
 
 //Hub maintains the set of active clients and broadcasts messages to the clients.
+type MsgCarrier struct {
+	msg          []byte
+	originClient *Client
+}
 type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool
 
 	// Inbound messages from the clients.
-	broadcast chan []byte
+	broadcast chan MsgCarrier
 
 	// Register requests from the clients.
 	register chan *Client
@@ -26,7 +30,7 @@ type Hub struct {
 
 func newHub() *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
+		broadcast:  make(chan MsgCarrier),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
@@ -43,7 +47,8 @@ func (h *Hub) run() {
 				delete(h.clients, client)
 				close(client.send)
 			}
-		case msg := <-h.broadcast:
+		case msgData := <-h.broadcast:
+			msg := msgData.msg
 			msgsplit := strings.Split(string(msg), " ~ ~ ")
 			if len(msgsplit) != 2 {
 				log.Println("Socket Error: Poorly Formatted Message")
@@ -55,7 +60,7 @@ func (h *Hub) run() {
 			case "all":
 				h.broadcastAll(msg)
 			case "init":
-				socketInitWall(msgsplit[1], h)
+				socketInitWall(msgsplit[1], msgData.originClient)
 			case "addCard":
 				socketAddCard(msgsplit[1], h)
 			case "deleteCard":
@@ -63,7 +68,7 @@ func (h *Hub) run() {
 			case "addBoard":
 				socketAddBoard(msgsplit[1], h)
 			case "addWall":
-				socketAddWall(msgsplit[1], h)
+				socketAddWall(msgsplit[1], msgData.originClient)
 			case "changeWallName":
 				socketChangeWallName(msgsplit[1], h)
 			case "changeBoardName":
