@@ -18,6 +18,13 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 }
 .kanban-item {
   border-radius: 3px;
+  cursor: move;
+}
+.card-edit-button{
+  background-color: #fff;
+  color: black;
+  padding: 3px;
+  cursor: pointer;
 }
 .kanban-add, .kanban-addboard-btn {
   padding: 15px;
