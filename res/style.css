@@ -38,11 +38,13 @@ body{font-family: "Lato"; margin:0; padding: 0;}
   color: black;
   padding: 3px 2px 0 5px;
   cursor: pointer;
+  border-radius: 2px;
 }
 .card-move-button{
   background-color: #fff;
   color: black;
   padding: 1px 3px;
+  border-radius: 2px;
 }
 
 .kanban-add, .kanban-addboard-btn {
