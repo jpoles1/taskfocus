@@ -17,17 +17,14 @@ vueEditInit = function(conn) {
       },
       linkify: function(text) {
         if (text) {
-          text = text.replace(
-            /((https?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi,
-            function(url) {
-              var full_url = url;
-              if (!full_url.match('^https?:\/\/')) {
-                full_url = 'http://' + full_url;
-              }
-              return '<a href="' + full_url + '" target="_blank">' + url + '</a>';
-            }
-          );
-          text = text.replace(/[\r\n]/g, "<br>");
+          // http://, https://, ftp://
+          var urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+          // www. sans http:// or https://
+          var pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+
+          return text
+            .replace(urlPattern, '<a target="_blank" href="$&">$&</a>')
+            .replace(pseudoUrlPattern, '$1<a target="_blank" href="http://$2">$2</a>')
         }
         return text;
       },
