@@ -30,7 +30,7 @@
           <div class="kanban-item" v-for="card in getCardArray(board.id)" :data-eid="card.id" :data-order="card.order" style="position: relative;">
             <!--\{{card.id}} - \{{card.order}}
             <br>-->
-            <div class="kanban-card-title" style="white-space: pre-wrap;" v-html="linkify(card.title)"></div>
+            <div class="kanban-card-title" style="overflow-wrap: break-word; white-space: pre-wrap;" v-html="linkify(card.title)"></div>
             <div class='kanban-card-title-form' style="display: none;">
               <textarea class="kanban-card-title-textarea" :value="card.title" :defaultvalue="card.title"></textarea>
               <br>

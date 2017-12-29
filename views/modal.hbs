@@ -7,6 +7,11 @@
       <label for="edit-modal-btn" class="close">&times;</label>
     </header>
     <section class="content">
+      <b>Details:</b>
+      <div v-html="linkify(details)">
+
+      </div>
+      <hr>
       <textarea v-model="details" placeholder="Add details here..."></textarea>
     </section>
     <footer>

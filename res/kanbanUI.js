@@ -29,6 +29,10 @@ vueKanbanInit = function(conn, boardData) {
         vueEditApp.boardID = boardID
         vueEditApp.title = cardData.title
         vueEditApp.details = cardData.details
+        setTimeout(function() {
+          console.log("rsz")
+          autosize.update($("textarea"))
+        }, 200)
       },
       linkify: function(text) {
         if (text) {

@@ -8,6 +8,24 @@ vueEditInit = function(conn) {
       details: ""
     },
     methods: {
+      linkify: function(text) {
+        if (text) {
+          text = text.replace(
+            /((https?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi,
+            function(url) {
+              var full_url = url;
+              if (!full_url.match('^https?:\/\/')) {
+                full_url = 'http://' + full_url;
+              }
+              return '<a href="' + full_url + '" target="_blank">' + url + '</a>';
+            }
+          );
+          console.log("TXT", text)
+          text = text.replace(/[\r\n]/g, "<br>");
+          console.log(text)
+        }
+        return text;
+      },
       saveCard: function() {
         detailsData = {
           CardID: this.id,
