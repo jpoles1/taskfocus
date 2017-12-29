@@ -30,7 +30,7 @@
           <div class="kanban-item" v-for="card in getCardArray(board.id)" :data-eid="card.id" :data-order="card.order" style="position: relative;">
             <!--\{{card.id}} - \{{card.order}}
             <br>-->
-            <div class="kanban-card-title" style="overflow-wrap: break-word; white-space: pre-wrap;" v-html="linkify(card.title)"></div>
+            <div class="kanban-card-title" v-html="linkify(card.title)"></div>
             <div class='kanban-card-title-form' style="display: none;">
               <textarea class="kanban-card-title-textarea" :value="card.title" :defaultvalue="card.title"></textarea>
               <br>
@@ -39,6 +39,9 @@
             </div>
             <div class="card-edit-button" style="position: absolute; top: 5px; right: -20px;">
               <i class="fas fa-edit"></i>
+            </div>
+            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 20px;">
+              <i class="fas fa-arrows-alt"></i>
             </div>
           </div>
         </main>

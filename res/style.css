@@ -19,6 +19,16 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-item {
   border-radius: 3px;
   cursor: move;
+  padding: 5px !important;
+  margin-bottom: 35px !important;
+}
+.kanban-card-title{
+  padding: 10px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+.kanban-card-title-form{
+  padding: 10px;
 }
 .card-edit-button{
   background-color: #fff;
@@ -26,6 +36,12 @@ body{font-family: "Lato"; margin:0; padding: 0;}
   padding: 3px;
   cursor: pointer;
 }
+.card-move-button{
+  background-color: #fff;
+  color: black;
+  padding: 3px 5px 0 5px;
+}
+
 .kanban-add, .kanban-addboard-btn {
   padding: 15px;
   margin-bottom: 0;

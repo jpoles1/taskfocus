@@ -280,7 +280,7 @@ vueKanbanInit = function(conn, boardData) {
         $(".kanban-board-title-form button").off("click").click(function() {
           submitBoardNameForm(this)
         })
-        $(".kanban-card-title").off("click").click(function() {
+        $(".kanban-card-title").off("dblclick").dblclick(function() {
           $(this).parent().children().show()
           $(this).hide()
           autosize.update($("textarea"))
