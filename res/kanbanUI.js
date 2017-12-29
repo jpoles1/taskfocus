@@ -29,6 +29,7 @@ vueKanbanInit = function(conn, boardData) {
         vueEditApp.boardID = boardID
         vueEditApp.title = cardData.title
         vueEditApp.details = cardData.details
+        vueEditApp.tasks = cardData.tasks
         setTimeout(function() {
           console.log("rsz")
           autosize.update($("textarea"))
@@ -62,6 +63,18 @@ vueKanbanInit = function(conn, boardData) {
           return a.order - b.order
         })
         return cardArray
+      },
+      tasksLeft: function(card) {
+        leftCt = 0;
+        totalCt = 0;
+        for (index in card.tasks) {
+          task = card.tasks[index]
+          if (!task.checked) {
+            leftCt += 1
+          }
+          totalCt += 1
+        }
+        return leftCt + "/" + totalCt
       },
       addBoard: function(boardID, name) {
         this.boardList.push({

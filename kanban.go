@@ -133,15 +133,16 @@ type KanbanBoard struct {
 
 //KanbanCard holds the data for a card; an entry in a KanbanBoard
 type KanbanCard struct {
-	ID        string `json:"id"`
-	Order     int    `json:"order"`
-	Title     string `json:"title"`
-	Details   string `json:"details"`
-	checkList map[string]KanbanTask
+	ID        string                `json:"id"`
+	Order     int                   `json:"order"`
+	Title     string                `json:"title"`
+	Details   string                `json:"details"`
+	CheckList map[string]KanbanTask `json:"tasks"`
 }
 
 //KanbanTask holds the data on a checklist item belonging to a KanbanCard
 type KanbanTask struct {
-	ID      string
-	Details string
+	ID      string `json:"id"`
+	Details string `json:"details"`
+	Checked bool   `json:"checked"`
 }

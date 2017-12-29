@@ -5,7 +5,8 @@ vueEditInit = function(conn) {
       id: "",
       boardID: "",
       title: "",
-      details: ""
+      details: "",
+      tasks: []
     },
     methods: {
       linkify: function(text) {

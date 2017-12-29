@@ -14,5 +14,7 @@
 </div>
 <script>
   var urlAccountID = "{{accountID}}"
+  //Websocket will not work with HTTPS
+  if (location.protocol == "https:") location.protocol = "http:";
 </script>
 <script src="/res/userAPI.js"></script>

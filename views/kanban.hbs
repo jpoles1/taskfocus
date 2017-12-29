@@ -40,7 +40,10 @@
             <div class="card-edit-button" style="position: absolute; top: 5px; right: -20px;">
               <i class="fas fa-edit"></i>
             </div>
-            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 20px;">
+            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 50px;">
+              <i class="fas fa-check"></i> <span v-html="tasksLeft(card)"></span>
+            </div>
+            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 15px;">
               <i class="fas fa-arrows-alt"></i>
             </div>
           </div>
@@ -73,6 +76,8 @@
   var urlAccountID = "{{accountID}}"
   var urlWallID = "{{wallID}}"
   var urlWallName = "{{wallName}}"
+  //Websocket will not work with HTTPS
+  if (location.protocol == "https:") location.protocol = "http:";
 </script>
 <script src="/res/kanbanAPI.js"></script>
 <script src="/res/editUI.js"></script>

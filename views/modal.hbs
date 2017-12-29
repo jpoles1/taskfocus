@@ -8,11 +8,15 @@
     </header>
     <section class="content">
       <b>Details:</b>
-      <div v-html="linkify(details)">
-
-      </div>
+      <div v-html="linkify(details)"></div>
       <hr>
       <textarea v-model="details" placeholder="Add details here..."></textarea>
+      <hr>
+      <b>Checklist:</b>
+      <div v-for="task in tasks">
+        <input type="checkbox" v-id="'task-'+task.id" v-model="task.checked">
+        <label :for="'task-'+task.id">\{{task.details}}</label>
+      </div>
     </section>
     <footer>
       <a class="button" href="#" style="float: right;" id="edit-modal-save">Save Changes</a>
