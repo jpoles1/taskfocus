@@ -31,8 +31,8 @@ vueKanbanInit = function(conn, boardData) {
         vueEditApp.details = cardData.details
         vueEditApp.tasks = cardData.tasks
         setTimeout(function() {
-          console.log("rsz")
           autosize.update($("textarea"))
+          vueEditApp.refreshEvents()
         }, 200)
       },
       linkify: function(text) {

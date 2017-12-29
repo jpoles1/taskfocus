@@ -9,6 +9,12 @@ vueEditInit = function(conn) {
       tasks: []
     },
     methods: {
+      cleanDetails(detailsText) {
+        if (detailsText == "") {
+          return "<i>Click to add details...</i>"
+        }
+        return this.linkify(detailsText)
+      },
       linkify: function(text) {
         if (text) {
           text = text.replace(
@@ -21,9 +27,7 @@ vueEditInit = function(conn) {
               return '<a href="' + full_url + '" target="_blank">' + url + '</a>';
             }
           );
-          console.log("TXT", text)
           text = text.replace(/[\r\n]/g, "<br>");
-          console.log(text)
         }
         return text;
       },
@@ -35,23 +39,40 @@ vueEditInit = function(conn) {
           Details: this.details
         }
         conn.send("changeCardDetails ~ ~ " + JSON.stringify(detailsData))
+      },
+      refreshEvents() {
+        var app = this
+        $("#card-details").dblclick(function() {
+          $(this).parent().children().show()
+          $(this).hide()
+          autosize.update($("textarea"))
+          $(this).siblings(".card-details-form").children("textarea").focus()
+          app.refreshEvents()
+        })
+        $("#edit-modal-container").keydown(function(e) {
+          if (e.keyCode == 27) {
+            $("#edit-modal").prop("checked", false)
+          }
+        });
+
+        function submitCardDetailsForm(el) {
+          app.details = $(el).parent().children("textarea").first().val()
+          app.saveCard();
+          $(el).siblings(".cancel").click()
+        }
+        $("#card-details-form textarea").off("keydown").keydown(function(e) {
+          if (e.keyCode == 27) {
+            $(this).siblings(".cancel").click()
+          }
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitCardDetailsForm(this)
+          }
+        })
+        $("#card-details-form button").click(function() {
+          submitCardDetailsForm(this)
+        })
       }
     }
-  })
-  $("#edit-modal").keydown(function(e) {
-    //Cntrl + Enter
-    if (e.ctrlKey && e.keyCode == 13) {
-      app.saveCard();
-      $("#edit-modal-btn").prop("checked", false);
-    }
-    //Esc
-    if (e.keyCode == 27) {
-      $("#edit-modal-btn").prop("checked", false);
-    }
-  })
-  $("#edit-modal-save").click(function() {
-    app.saveCard();
-    $("#edit-modal-btn").prop("checked", false);
   })
   return app
 }

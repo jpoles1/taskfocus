@@ -4,8 +4,11 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .info{background: #2A92BF;}
 .warning{background: #F4CE46;}
 .error{background: #FB7D44;}
+.cancel{
+  cursor: pointer;
+}
 .kanban-drag{
-  padding-right: 25px !important;
+  padding: 20px 28px 20px 12px !important;
 }
 .kanban-board{
   border-radius: 3px;
@@ -33,13 +36,13 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .card-edit-button{
   background-color: #fff;
   color: black;
-  padding: 3px;
+  padding: 3px 2px 0 5px;
   cursor: pointer;
 }
 .card-move-button{
   background-color: #fff;
   color: black;
-  padding: 3px 5px 0 5px;
+  padding: 1px 3px;
 }
 
 .kanban-add, .kanban-addboard-btn {

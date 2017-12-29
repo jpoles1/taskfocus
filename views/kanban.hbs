@@ -31,20 +31,20 @@
             <!--\{{card.id}} - \{{card.order}}
             <br>-->
             <div class="kanban-card-title" v-html="linkify(card.title)"></div>
-            <div class='kanban-card-title-form' style="display: none;">
+            <div class='kanban-card-title-form' style="display: none; cursor: auto;">
               <textarea class="kanban-card-title-textarea" :value="card.title" :defaultvalue="card.title"></textarea>
               <br>
               <button type="submit">Save</button>
               <a class="cancel" style="font-size: 24px; float: right;">X</a>
             </div>
-            <div class="card-edit-button" style="position: absolute; top: 5px; right: -20px;">
-              <i class="fas fa-edit"></i>
+            <div class="card-move-button" style="position: absolute; top: 5px; right: -23px;">
+              <i class="fas fa-arrows-alt"></i>
             </div>
-            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 50px;">
+            <div class="card-edit-button" style="position: absolute; bottom: -25px; right: 50px;">
               <i class="fas fa-check"></i> <span v-html="tasksLeft(card)"></span>
             </div>
-            <div class="card-move-button" style="position: absolute; bottom: -25px; right: 15px;">
-              <i class="fas fa-arrows-alt"></i>
+            <div class="card-edit-button" style="position: absolute; bottom: -25px; right: 15px;">
+              <i class="fas fa-edit" :style="{color: ((card.details.length > 0) ? 'black' : '#bbb')}"></i>
             </div>
           </div>
         </main>

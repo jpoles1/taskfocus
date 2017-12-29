@@ -1,16 +1,20 @@
 <div id="edit-modal" class="modal">
   <input id="edit-modal-btn" type="checkbox" />
   <label for="edit-modal-btn" class="overlay"></label>
-  <article style="min-width: 60%;">
+  <article id="edit-modal-container" style="min-width: 60%;">
     <header>
       <h3>\{{title}}</h3>
       <label for="edit-modal-btn" class="close">&times;</label>
     </header>
     <section class="content">
       <b>Details:</b>
-      <div v-html="linkify(details)"></div>
-      <hr>
-      <textarea v-model="details" placeholder="Add details here..."></textarea>
+      <div id="card-details" v-html="cleanDetails(details)"></div>
+      <div id="card-details-form"style="display: none;">
+        <textarea :value="details" :defaultvalue="details" placeholder="Add details here..."></textarea>
+        <br>
+        <button type="submit">Save</button>
+        <a class="cancel" style="font-size: 24px; float: right;">X</a>
+      </div>
       <hr>
       <b>Checklist:</b>
       <div v-for="task in tasks">
@@ -19,9 +23,8 @@
       </div>
     </section>
     <footer>
-      <a class="button" href="#" style="float: right;" id="edit-modal-save">Save Changes</a>
-      <label for="edit-modal-btn" class="button dangerous" style="float: left;">
-        Cancel
+      <label for="edit-modal-btn" class="button dangerous">
+        Close
       </label>
       <br><br>
     </footer>
