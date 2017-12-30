@@ -33,7 +33,9 @@ vueKanbanInit = function(conn, boardData) {
         vueEditApp.title = cardData.title
         vueEditApp.details = cardData.details
         vueEditApp.tasks = cardData.tasks
+        window.location.hash = boardID + "," + cardID
         setTimeout(function() {
+          $("#edit-modal-btn").prop("checked", true);
           autosize.update($("textarea"))
           vueEditApp.refreshEvents()
         }, 200)
@@ -173,7 +175,6 @@ vueKanbanInit = function(conn, boardData) {
           cardID = $(this).parent().attr("data-eid")
           boardID = $(this).parents().eq(2).attr("data-id")
           app.startEdit(boardID, cardID)
-          $("#edit-modal-btn").prop("checked", true);
         })
         //Closes the current form
         $(".cancel").off("click").click(function() {
@@ -447,5 +448,20 @@ vueKanbanInit = function(conn, boardData) {
   app.refreshEvents()
   app.refreshDrag()
   app.calcWidth()
+  //Logic for opening cards base upon hash tags
+  var hash = window.location.hash;
+  if (hash.length > 0) {
+    hash = hash.split("#")[1]
+    console.log("Hash:", hash)
+    hashsplit = hash.split(",")
+    if (hashsplit.length == 2) {
+      app.startEdit(hashsplit[0], hashsplit[1])
+    }
+  }
+  $("#edit-modal-btn").change(function() {
+    if ($(this).prop("checked") == false) {
+      window.location.hash = ""
+    }
+  })
   return app
 }
