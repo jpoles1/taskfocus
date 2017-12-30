@@ -87,6 +87,21 @@ func (kw *KanbanWall) changeCardDetails(details string, boardID string, cardID s
 	kw.BoardList[boardID].CardList[cardID] = kc
 	updateWall(kw.ID, kw)
 }
+func (kw *KanbanWall) addCheckListItem(taskText string, boardID string, cardID string) string {
+	kc := kw.BoardList[boardID].CardList[cardID]
+	taskID := strconv.Itoa(kc.CheckListCt)
+	kc.CheckList[taskID] = KanbanTask{taskID, taskText, false}
+	kc.CheckListCt++
+	kw.BoardList[boardID].CardList[cardID] = kc
+	updateWall(kw.ID, kw)
+	return taskID
+}
+func (kw *KanbanWall) updateCheckListItem(checked bool, boardID string, cardID string, taskID string) {
+	kt := kw.BoardList[boardID].CardList[cardID].CheckList[taskID]
+	kt.Checked = checked
+	kw.BoardList[boardID].CardList[cardID].CheckList[taskID] = kt
+	updateWall(kw.ID, kw)
+}
 func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {
 	kb := kw.BoardList[boardID]
 	kc.ID = strconv.Itoa(kw.CardCt)
@@ -133,11 +148,12 @@ type KanbanBoard struct {
 
 //KanbanCard holds the data for a card; an entry in a KanbanBoard
 type KanbanCard struct {
-	ID        string                `json:"id"`
-	Order     int                   `json:"order"`
-	Title     string                `json:"title"`
-	Details   string                `json:"details"`
-	CheckList map[string]KanbanTask `json:"tasks"`
+	ID          string `json:"id"`
+	Order       int    `json:"order"`
+	Title       string `json:"title"`
+	Details     string `json:"details"`
+	CheckListCt int
+	CheckList   map[string]KanbanTask `json:"tasks"`
 }
 
 //KanbanTask holds the data on a checklist item belonging to a KanbanCard

@@ -79,6 +79,11 @@ func (h *Hub) run() {
 				socketChangeCardDetails(msgsplit[1], h)
 			case "moveCard":
 				socketMoveCard(msgsplit[1], h)
+			case "addChecklistItem":
+				socketAddChecklistItem(msgsplit[1], h)
+			case "updateChecklistItem":
+				socketUpdateChecklistItem(msgsplit[1], h)
+
 			}
 		}
 	}

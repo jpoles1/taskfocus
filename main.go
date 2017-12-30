@@ -47,6 +47,7 @@ func main() {
 	hub := newHub()
 	go hub.run()
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		//Can we fetch info about user from cookies/session for channels?
 		serveWs(hub, w, r)
 	})
 	//Start the engines

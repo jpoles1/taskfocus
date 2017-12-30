@@ -60,7 +60,7 @@ func socketAddCard(data string, h *Hub) {
 		log.Println(err)
 	}
 	fmt.Println("Add Card", cardData)
-	newCard := KanbanCard{"0", 0, cardData.Title, "", map[string]KanbanTask{}}
+	newCard := KanbanCard{"0", 0, cardData.Title, "", 0, map[string]KanbanTask{}}
 	if len(cardData.BoardID) > 0 {
 		kw := servKanbanData.WallList[cardData.WallID]
 		cardData.ID, cardData.Order = kw.addCard(newCard, cardData.BoardID)
@@ -180,4 +180,42 @@ func socketMoveCard(data string, h *Hub) {
 	}
 	kw.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
 	h.broadcastAll([]byte("moveCard ~ ~ " + data))
+}
+func socketAddChecklistItem(data string, h *Hub) {
+	type TaskData struct {
+		CardID   string
+		BoardID  string
+		WallID   string
+		TaskText string
+		TaskID   string
+	}
+	var taskData TaskData
+	err := json.Unmarshal([]byte(data), &taskData)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("Add card task:", taskData)
+	kw := servKanbanData.WallList[taskData.WallID]
+	taskID := kw.addCheckListItem(taskData.TaskText, taskData.BoardID, taskData.CardID)
+	taskData.TaskID = taskID
+	broadcast, _ := json.Marshal(taskData)
+	h.broadcastAll([]byte("addCheckListItem ~ ~ " + string(broadcast)))
+}
+func socketUpdateChecklistItem(data string, h *Hub) {
+	type TaskData struct {
+		TaskID  string
+		BoardID string
+		CardID  string
+		WallID  string
+		Checked bool
+	}
+	var taskData TaskData
+	err := json.Unmarshal([]byte(data), &taskData)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("Add card task:", taskData)
+	kw := servKanbanData.WallList[taskData.WallID]
+	kw.updateCheckListItem(taskData.Checked, taskData.BoardID, taskData.CardID, taskData.TaskID)
+	h.broadcastAll([]byte("updateCheckListItem ~ ~ " + data))
 }

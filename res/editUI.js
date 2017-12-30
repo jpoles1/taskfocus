@@ -11,7 +11,7 @@ vueEditInit = function(conn) {
     methods: {
       cleanDetails(detailsText) {
         if (detailsText == "") {
-          return "<i>Click to add details...</i>"
+          return ""
         }
         return this.linkify(detailsText)
       },
@@ -37,27 +37,48 @@ vueEditInit = function(conn) {
         }
         conn.send("changeCardDetails ~ ~ " + JSON.stringify(detailsData))
       },
+      addChecklistItem: function(taskText) {
+        checklistData = {
+          CardID: this.id,
+          BoardID: this.boardID,
+          WallID: urlWallID,
+          TaskText: taskText
+        }
+        conn.send("addChecklistItem ~ ~ " + JSON.stringify(checklistData))
+      },
+      updateChecklistItem: function(taskID, checked) {
+        checklistData = {
+          TaskID: taskID,
+          CardID: this.id,
+          BoardID: this.boardID,
+          WallID: urlWallID,
+          Checked: checked
+        }
+        conn.send("updateChecklistItem ~ ~ " + JSON.stringify(checklistData))
+      },
       refreshEvents() {
         var app = this
-        $("#card-details").dblclick(function() {
-          $(this).parent().children().show()
-          $(this).hide()
-          autosize.update($("textarea"))
-          $(this).siblings(".card-details-form").children("textarea").focus()
-          app.refreshEvents()
-        })
-        $("#edit-modal-container").keydown(function(e) {
+        //TODO Doesn't seem to work
+        $("#edit-modal").keydown(function(e) {
           if (e.keyCode == 27) {
             $("#edit-modal").prop("checked", false)
           }
         });
+        //Editing card details
+        $("#kanban-card-details").dblclick(function() {
+          $(this).parent().children().show()
+          $(this).hide()
+          autosize.update($("textarea"))
+          $(this).siblings(".kanban-card-details-form").children("textarea").focus()
+          app.refreshEvents()
+        })
 
         function submitCardDetailsForm(el) {
           app.details = $(el).parent().children("textarea").first().val()
           app.saveCard();
           $(el).siblings(".cancel").click()
         }
-        $("#card-details-form textarea").off("keydown").keydown(function(e) {
+        $("#kanban-card-details-form textarea").off("keydown").keydown(function(e) {
           if (e.keyCode == 27) {
             $(this).siblings(".cancel").click()
           }
@@ -65,8 +86,26 @@ vueEditInit = function(conn) {
             submitCardDetailsForm(this)
           }
         })
-        $("#card-details-form button").click(function() {
+        $("#kanban-card-details-form button").click(function() {
           submitCardDetailsForm(this)
+        })
+
+        function submitCardChecklist(el) {
+          app.addChecklistItem($(el).val());
+          $(el).val("")
+        }
+        //Task creation
+        $(".kanban-card-task-form textarea").off("keydown").keydown(function(e) {
+          if (e.keyCode == 27) {
+            $(this).val("")
+          }
+          if (e.ctrlKey && e.keyCode == 13) {
+            submitCardChecklist(this)
+          }
+        })
+        $(".kanban-checklist-item input").off("click").click(function() {
+          taskID = $(this).parent().parent().attr("data-eid")
+          app.updateChecklistItem(taskID, $(this).prop("checked"));
         })
       }
     }

@@ -63,16 +63,16 @@ vueKanbanInit = function(conn, boardData) {
         return cardArray
       },
       tasksLeft: function(card) {
-        leftCt = 0;
+        completedCt = 0;
         totalCt = 0;
         for (index in card.tasks) {
           task = card.tasks[index]
-          if (!task.checked) {
-            leftCt += 1
+          if (task.checked) {
+            completedCt += 1
           }
           totalCt += 1
         }
-        return leftCt + "/" + totalCt
+        return completedCt + "/" + totalCt
       },
       addBoard: function(boardID, name) {
         this.boardList.push({

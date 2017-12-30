@@ -7,9 +7,13 @@
       <label for="edit-modal-btn" class="close">&times;</label>
     </header>
     <section class="content">
-      <b>Details:</b>
-      <div id="card-details" v-html="cleanDetails(details)"></div>
-      <div id="card-details-form"style="display: none;">
+      <b>Details: </b>
+      <br>
+      <div id="kanban-card-details">
+        <div v-html="cleanDetails(details)" style="white-space: pre-wrap;"></div>
+        <small><i style="color: #aaa">(double click to edit)</i></small>
+      </div>
+      <div id="kanban-card-details-form"style="display: none;">
         <textarea :value="details" :defaultvalue="details" placeholder="Add details here..."></textarea>
         <br>
         <button type="submit">Save</button>
@@ -17,9 +21,16 @@
       </div>
       <hr>
       <b>Checklist:</b>
-      <div v-for="task in tasks">
-        <input type="checkbox" v-id="'task-'+task.id" v-model="task.checked">
-        <label :for="'task-'+task.id">\{{task.details}}</label>
+      <div class ="kanban-card-task-form">
+        <textarea placeholder="New checklist task..."></textarea>
+      </div>
+      <div id="kanban-checklist-container">
+        <div v-for="task in tasks" :data-eid="task.id">
+          <label class="kanban-checklist-item">
+            <input type="checkbox" v-id="'task-'+task.id" v-model="task.checked">
+            <span class="checkable">\{{task.details}}</span>
+          </label>
+        </div>
       </div>
     </section>
     <footer>
