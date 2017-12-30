@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
@@ -43,7 +44,8 @@ type Client struct {
 
 	// The websocket connection.
 	conn *websocket.Conn
-
+	//
+	wallID string
 	// Buffered channel of outbound messages.
 	send chan []byte
 }
@@ -121,17 +123,31 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) bool {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		return
+		return false
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	//Check if user is authorized to access this websocket.
+	session, _ := store.Get(r, "gAuth")
+	sessionID := session.Values["email"]
+	if sessionID == nil {
+		return false
+	}
+	sessionIDString := string(session.Values["email"].(string))
+	urlparams := mux.Vars(r)
+	wallID := urlparams["wallID"]
+	if !servKanbanData.userWallAccess(sessionIDString, wallID) {
+		log.Fatal("Access Denied: " + sessionIDString + " is trying to access wall " + wallID)
+		return false
+	}
+	client := &Client{hub: hub, conn: conn, wallID: wallID, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+	return true
 }

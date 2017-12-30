@@ -44,7 +44,7 @@ func socketChangeWallName(data string, h *Hub) {
 		log.Println(err)
 	}
 	servKanbanData.changeWallName(wallData.WallID, wallData.Name)
-	h.broadcastAll([]byte("changeWallName ~ ~ " + data))
+	h.broadcastChannel(wallData.WallID, []byte("changeWallName ~ ~ "+data))
 }
 func socketAddCard(data string, h *Hub) {
 	type CardData struct {
@@ -67,7 +67,7 @@ func socketAddCard(data string, h *Hub) {
 		servKanbanData.WallList[cardData.WallID] = kw
 		fmt.Println(cardData)
 		broadcast, _ := json.Marshal(cardData)
-		h.broadcastAll([]byte("addCard ~ ~ " + string(broadcast)))
+		h.broadcastChannel(cardData.WallID, []byte("addCard ~ ~ "+string(broadcast)))
 	}
 }
 func socketDeleteCard(data string, h *Hub) {
@@ -85,7 +85,7 @@ func socketDeleteCard(data string, h *Hub) {
 	kw := servKanbanData.WallList[cardData.WallID]
 	kw.deleteCard(cardData.BoardID, cardData.CardID)
 	servKanbanData.WallList[cardData.WallID] = kw
-	h.broadcastAll([]byte("deleteCard ~ ~ " + data))
+	h.broadcastChannel(cardData.WallID, []byte("deleteCard ~ ~ "+data))
 }
 func socketAddBoard(data string, h *Hub) {
 	type BoardData struct {
@@ -104,7 +104,7 @@ func socketAddBoard(data string, h *Hub) {
 	boardData.ID = kw.addBoard(newBoard)
 	fmt.Println(boardData)
 	broadcast, _ := json.Marshal(boardData)
-	h.broadcastAll([]byte("addBoard ~ ~ " + string(broadcast)))
+	h.broadcastChannel(boardData.WallID, []byte("addBoard ~ ~ "+string(broadcast)))
 }
 func socketChangeBoardName(data string, h *Hub) {
 	type NameData struct {
@@ -121,7 +121,7 @@ func socketChangeBoardName(data string, h *Hub) {
 	kw := servKanbanData.WallList[nameData.WallID]
 	kw.changeBoardName(nameData.BoardID, nameData.Name)
 	servKanbanData.WallList[nameData.WallID] = kw
-	h.broadcastAll([]byte("changeBoardName ~ ~ " + data))
+	h.broadcastChannel(nameData.WallID, []byte("changeBoardName ~ ~ "+data))
 }
 func socketChangeCardTitle(data string, h *Hub) {
 	type TitleData struct {
@@ -139,7 +139,7 @@ func socketChangeCardTitle(data string, h *Hub) {
 	kw := servKanbanData.WallList[titleData.WallID]
 	kw.changeCardTitle(titleData.Title, titleData.BoardID, titleData.CardID)
 	fmt.Println(titleData)
-	h.broadcastAll([]byte("changeCardTitle ~ ~ " + data))
+	h.broadcastChannel(titleData.WallID, []byte("changeCardTitle ~ ~ "+data))
 }
 
 func socketChangeCardDetails(data string, h *Hub) {
@@ -157,7 +157,7 @@ func socketChangeCardDetails(data string, h *Hub) {
 	fmt.Println("Change Card Details:", detailsData)
 	kw := servKanbanData.WallList[detailsData.WallID]
 	kw.changeCardDetails(detailsData.Details, detailsData.BoardID, detailsData.CardID)
-	h.broadcastAll([]byte("changeCardDetails ~ ~ " + data))
+	h.broadcastChannel(detailsData.WallID, []byte("changeCardDetails ~ ~ "+data))
 }
 func socketMoveCard(data string, h *Hub) {
 	type MoveData struct {
@@ -179,8 +179,10 @@ func socketMoveCard(data string, h *Hub) {
 		kw.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
 	}
 	kw.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
-	h.broadcastAll([]byte("moveCard ~ ~ " + data))
+	h.broadcastChannel(moveData.WallID, []byte("moveCard ~ ~ "+data))
 }
+
+//Checklist Manipulation
 func socketAddChecklistItem(data string, h *Hub) {
 	type TaskData struct {
 		CardID   string
@@ -199,7 +201,7 @@ func socketAddChecklistItem(data string, h *Hub) {
 	taskID := kw.addCheckListItem(taskData.TaskText, taskData.BoardID, taskData.CardID)
 	taskData.TaskID = taskID
 	broadcast, _ := json.Marshal(taskData)
-	h.broadcastAll([]byte("addCheckListItem ~ ~ " + string(broadcast)))
+	h.broadcastChannel(taskData.WallID, []byte("addCheckListItem ~ ~ "+string(broadcast)))
 }
 func socketUpdateChecklistItem(data string, h *Hub) {
 	type TaskData struct {
@@ -217,5 +219,22 @@ func socketUpdateChecklistItem(data string, h *Hub) {
 	fmt.Println("Add card task:", taskData)
 	kw := servKanbanData.WallList[taskData.WallID]
 	kw.updateCheckListItem(taskData.Checked, taskData.BoardID, taskData.CardID, taskData.TaskID)
-	h.broadcastAll([]byte("updateCheckListItem ~ ~ " + data))
+	h.broadcastChannel(taskData.WallID, []byte("updateCheckListItem ~ ~ "+data))
+}
+func socketDeleteChecklistItem(data string, h *Hub) {
+	type TaskData struct {
+		TaskID  string
+		BoardID string
+		CardID  string
+		WallID  string
+	}
+	var taskData TaskData
+	err := json.Unmarshal([]byte(data), &taskData)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("Add card task:", taskData)
+	kw := servKanbanData.WallList[taskData.WallID]
+	kw.deleteCheckListItem(taskData.BoardID, taskData.CardID, taskData.TaskID)
+	h.broadcastChannel(taskData.WallID, []byte("deleteCheckListItem ~ ~ "+data))
 }

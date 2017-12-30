@@ -7,11 +7,11 @@
       <label for="edit-modal-btn" class="close">&times;</label>
     </header>
     <section class="content">
-      <b>Details: </b>
-      <br>
+      <b>Details:</b>
+      <hr>
       <div id="kanban-card-details">
         <div v-html="cleanDetails(details)" style="white-space: pre-wrap;"></div>
-        <small><i style="color: #aaa">(double click to edit)</i></small>
+        <small style="margin-top: 8px;"><i style="color: #aaa">(double click to edit)</i></small>
       </div>
       <div id="kanban-card-details-form"style="display: none;">
         <textarea :value="details" :defaultvalue="details" placeholder="Add details here..."></textarea>
@@ -21,9 +21,11 @@
       </div>
       <hr>
       <b>Checklist:</b>
+      <hr>
       <div class ="kanban-card-task-form">
         <textarea placeholder="New checklist task..."></textarea>
       </div>
+      <hr>
       <div id="kanban-checklist-container">
         <div class="kanban-checklist-item-container" v-for="task in tasks" :data-eid="task.id">
           <label class="kanban-checklist-item">
@@ -32,7 +34,7 @@
               \{{task.details}}
             </span>
           </label>
-          <button class="dangerous" style="float: right; font-size: 14pt; margin-top: -7px" v-show="task.checked">X</button>
+          <button class="kanban-checklist-item-delete dangerous" style="float: right; font-size: 14pt; margin-top: -7px" v-show="task.checked">X</button>
         </div>
       </div>
     </section>

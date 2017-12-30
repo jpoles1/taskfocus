@@ -46,7 +46,8 @@ func main() {
 	//API sockets
 	hub := newHub()
 	go hub.run()
-	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	//Handle requests for a given wall
+	router.HandleFunc("/ws/{wallID}", func(w http.ResponseWriter, r *http.Request) {
 		//Can we fetch info about user from cookies/session for channels?
 		serveWs(hub, w, r)
 	})

@@ -6,7 +6,7 @@ $(function() {
 
   function startSocket(startCallback, msgCallback) {
     if (window["WebSocket"]) {
-      conn = new WebSocket("ws://" + document.location.host + "/ws");
+      conn = new WebSocket("ws://" + document.location.host + "/ws/" + urlWallID);
       conn.onopen = function() {
         startCallback(conn)
       }
@@ -39,7 +39,9 @@ $(function() {
         app.addCard(newCard.BoardID, {
           "id": newCard.ID,
           "order": newCard.Order,
-          "title": newCard.Title
+          "title": newCard.Title,
+          "details": "",
+          "tasks": {}
         })
       }
       if (msgsplit[0] == "deleteCard") {
@@ -86,6 +88,19 @@ $(function() {
         }
         app.moveCardOrder(moveData.CardID, moveData.DestBoardID, moveData.OrderBefore, moveData.OrderAfter)
         setTimeout(app.refreshEvents, 200)
+      }
+      //Checklist
+      if (msgsplit[0] == "addCheckListItem") {
+        taskData = JSON.parse(msgsplit[1])
+        app.addChecklistItem(taskData.BoardID, taskData.CardID, taskData.TaskID, taskData.TaskText)
+      }
+      if (msgsplit[0] == "updateCheckListItem") {
+        taskData = JSON.parse(msgsplit[1])
+        app.updateChecklistItem(taskData.BoardID, taskData.CardID, taskData.TaskID, taskData.Checked)
+      }
+      if (msgsplit[0] == "deleteCheckListItem") {
+        taskData = JSON.parse(msgsplit[1])
+        app.deleteChecklistItem(taskData.BoardID, taskData.CardID, taskData.TaskID)
       }
     } else {
       console.log("Socket Error: Poorly Formatted Message")

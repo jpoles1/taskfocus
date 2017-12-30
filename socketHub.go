@@ -16,7 +16,7 @@ type MsgCarrier struct {
 }
 type Hub struct {
 	// Registered clients.
-	clients map[*Client]bool
+	clients map[*Client]string
 
 	// Inbound messages from the clients.
 	broadcast chan MsgCarrier
@@ -33,7 +33,7 @@ func newHub() *Hub {
 		broadcast:  make(chan MsgCarrier),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		clients:    make(map[*Client]string),
 	}
 }
 
@@ -41,7 +41,7 @@ func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
-			h.clients[client] = true
+			h.clients[client] = client.wallID
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
@@ -57,8 +57,6 @@ func (h *Hub) run() {
 			log.Println("Socket msgtype:", msgsplit[0])
 			log.Println("Socket msg:", msgsplit[1])
 			switch msgsplit[0] {
-			case "all":
-				h.broadcastAll(msg)
 			case "init":
 				socketInitWall(msgsplit[1], msgData.originClient)
 			case "addCard":
@@ -83,7 +81,8 @@ func (h *Hub) run() {
 				socketAddChecklistItem(msgsplit[1], h)
 			case "updateChecklistItem":
 				socketUpdateChecklistItem(msgsplit[1], h)
-
+			case "deleteChecklistItem":
+				socketDeleteChecklistItem(msgsplit[1], h)
 			}
 		}
 	}
@@ -95,6 +94,19 @@ func (h *Hub) broadcastAll(msg []byte) {
 		default:
 			close(client.send)
 			delete(h.clients, client)
+		}
+	}
+}
+
+func (h *Hub) broadcastChannel(wallID string, msg []byte) {
+	for client := range h.clients {
+		if client.wallID == wallID {
+			select {
+			case client.send <- msg:
+			default:
+				close(client.send)
+				delete(h.clients, client)
+			}
 		}
 	}
 }

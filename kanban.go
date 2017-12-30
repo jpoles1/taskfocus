@@ -31,6 +31,14 @@ func (ks *KanbanServer) userWalls(accountID string) []KanbanWall {
 	}
 	return userWalls
 }
+func (ks *KanbanServer) userWallAccess(accountID string, wallID string) bool {
+	for _, val := range ks.AccountList[accountID].WallIDList {
+		if val == wallID {
+			return true
+		}
+	}
+	return false
+}
 func (ks *KanbanServer) addWall(accountID string, wallName string) string {
 	wallID := strconv.Itoa(len(ks.WallList))
 	ks.WallList[wallID] = KanbanWall{wallID, wallName, 0, map[string]KanbanBoard{}}
@@ -100,6 +108,10 @@ func (kw *KanbanWall) updateCheckListItem(checked bool, boardID string, cardID s
 	kt := kw.BoardList[boardID].CardList[cardID].CheckList[taskID]
 	kt.Checked = checked
 	kw.BoardList[boardID].CardList[cardID].CheckList[taskID] = kt
+	updateWall(kw.ID, kw)
+}
+func (kw *KanbanWall) deleteCheckListItem(boardID string, cardID string, taskID string) {
+	delete(kw.BoardList[boardID].CardList[cardID].CheckList, taskID)
 	updateWall(kw.ID, kw)
 }
 func (kw *KanbanWall) addCard(kc KanbanCard, boardID string) (string, int) {

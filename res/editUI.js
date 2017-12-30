@@ -56,6 +56,15 @@ vueEditInit = function(conn) {
         }
         conn.send("updateChecklistItem ~ ~ " + JSON.stringify(checklistData))
       },
+      deleteChecklistItem: function(taskID) {
+        checklistData = {
+          TaskID: taskID,
+          CardID: this.id,
+          BoardID: this.boardID,
+          WallID: urlWallID
+        }
+        conn.send("deleteChecklistItem ~ ~ " + JSON.stringify(checklistData))
+      },
       refreshEvents() {
         var app = this
         //TODO Doesn't seem to work
@@ -106,6 +115,11 @@ vueEditInit = function(conn) {
         $(".kanban-checklist-item input").off("click").click(function() {
           taskID = $(this).parent().parent().attr("data-eid")
           app.updateChecklistItem(taskID, $(this).prop("checked"));
+        })
+        //Task deletion
+        $(".kanban-checklist-item-delete").off("click").click(function() {
+          taskID = $(this).parent().attr("data-eid")
+          app.deleteChecklistItem(taskID);
         })
       }
     }

@@ -1,8 +1,10 @@
+var vueEditApp
+var currentModalCardID //string containing ID of current card in editing pane
 vueKanbanInit = function(conn, boardData) {
   var drake, drakeBoard
   var boardData = Object.values(JSON.parse(boardData))
   console.log("Populating Data:", boardData)
-  var vueEditApp = vueEditInit(conn);
+  vueEditApp = vueEditInit(conn);
 
   function showError(errmsg) {
     $.growl.error({
@@ -25,6 +27,7 @@ vueKanbanInit = function(conn, boardData) {
     methods: {
       startEdit: function(boardID, cardID) {
         cardData = this.boardList[parseInt(boardID)].item[cardID]
+        currentModalCardID = cardID
         vueEditApp.id = cardID
         vueEditApp.boardID = boardID
         vueEditApp.title = cardData.title
@@ -97,11 +100,17 @@ vueKanbanInit = function(conn, boardData) {
       changeCardTitle: function(boardID, cardID, title) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
         this.boardList[boardID].item[cardID].title = title
+        if (cardID == currentModalCardID) {
+          vueEditApp.title = title
+        }
         setTimeout(this.refreshEvents, 200)
       },
       changeCardDetails: function(boardID, cardID, details) {
         //Vue.set(this.boardList[parseInt(boardID)]["item"], card.id, card)
         this.boardList[boardID].item[cardID].details = details
+        if (cardID == currentModalCardID) {
+          vueEditApp.details = details
+        }
         setTimeout(this.refreshEvents, 200)
       },
       moveCardBoard: function(cardID, originBoardID, destBoardID) {
@@ -124,6 +133,35 @@ vueKanbanInit = function(conn, boardData) {
         oldCard.order = orderBefore + 1
         bl[destBoardID].item[cardID] = oldCard
         this.boardList = bl
+      },
+      addChecklistItem: function(boardID, cardID, taskID, taskText) {
+        taskObj = {
+          id: taskID,
+          details: taskText,
+          checked: false
+        }
+        Vue.set(this.boardList[boardID].item[cardID].tasks, taskID, taskObj)
+        if (cardID == currentModalCardID) {
+          Vue.set(vueEditApp.tasks, taskID, taskObj)
+        }
+        setTimeout(vueEditApp.refreshEvents, 200)
+      },
+      updateChecklistItem: function(boardID, cardID, taskID, checked) {
+        taskObj = this.boardList[boardID].item[cardID].tasks[taskID]
+        taskObj.checked = checked
+        Vue.set(this.boardList[boardID].item[cardID].tasks, taskID, taskObj)
+        if (cardID == currentModalCardID) {
+          Vue.set(vueEditApp.tasks, taskID, taskObj)
+        }
+        setTimeout(vueEditApp.refreshEvents, 200)
+      },
+      deleteChecklistItem: function(boardID, cardID, taskID) {
+        console.log("deleting")
+        Vue.delete(this.boardList[boardID].item[cardID].tasks, taskID)
+        if (cardID == currentModalCardID) {
+          Vue.delete(vueEditApp.tasks, taskID)
+        }
+        setTimeout(vueEditApp.refreshEvents, 200)
       },
       calcWidth: function() {
         this.wallWidth = (this.boardWidth + 2 * this.gutter) * (this.boardList.length + 1)
