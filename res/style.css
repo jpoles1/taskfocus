@@ -74,3 +74,13 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-wall-name, .kanban-board-title, .kanban-card-title, .kanban-add{
   cursor: pointer;
 }
+.kanban-card-task-form{
+  width: 90%;
+  margin: auto;
+}
+.kanban-checklist-item-container{
+  width: 90%;
+  margin: auto;
+  padding: 15px 20px;
+  border-bottom: .75px solid #333;
+}

@@ -25,11 +25,14 @@
         <textarea placeholder="New checklist task..."></textarea>
       </div>
       <div id="kanban-checklist-container">
-        <div v-for="task in tasks" :data-eid="task.id">
+        <div class="kanban-checklist-item-container" v-for="task in tasks" :data-eid="task.id">
           <label class="kanban-checklist-item">
             <input type="checkbox" v-id="'task-'+task.id" v-model="task.checked">
-            <span class="checkable">\{{task.details}}</span>
+            <span class="checkable">
+              \{{task.details}}
+            </span>
           </label>
+          <button class="dangerous" style="float: right; font-size: 14pt; margin-top: -7px" v-show="task.checked">X</button>
         </div>
       </div>
     </section>
