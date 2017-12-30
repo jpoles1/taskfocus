@@ -27,10 +27,10 @@
       </div>
       <hr>
       <div id="kanban-checklist-container">
-        <div class="kanban-checklist-item-container" v-for="task in tasks" :data-eid="task.id">
+        <div class="kanban-checklist-item-container" v-for="task in orderedTasks" :data-eid="task.id">
           <label class="kanban-checklist-item">
             <input type="checkbox" v-id="'task-'+task.id" v-model="task.checked">
-            <span class="checkable">
+            <span class="checkable" :class="{strikethrough: task.checked}">
               \{{task.details}}
             </span>
           </label>

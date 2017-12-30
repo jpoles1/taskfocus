@@ -6,7 +6,19 @@ vueEditInit = function(conn) {
       boardID: "",
       title: "",
       details: "",
-      tasks: []
+      tasks: {}
+    },
+    computed: {
+      orderedTasks: function() {
+        console.log(this.tasks)
+        return Object.values(this.tasks).sort(function(a, b) {
+          if (a.checked != b.checked) {
+            return a.checked
+          } else {
+            return parseInt(a.id) > parseInt(b.id)
+          }
+        })
+      }
     },
     methods: {
       cleanDetails(detailsText) {
