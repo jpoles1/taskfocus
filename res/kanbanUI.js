@@ -17,6 +17,7 @@ vueKanbanInit = function(conn, boardData) {
   var app = new Vue({
     el: '#jkanban',
     data: {
+      pageTitle: "TaskFocus",
       wallName: urlWallName,
       wallWidth: 800,
       boardWidth: 300,
@@ -34,6 +35,7 @@ vueKanbanInit = function(conn, boardData) {
         vueEditApp.details = cardData.details
         vueEditApp.tasks = cardData.tasks
         window.location.hash = boardID + "," + cardID
+        document.title = cardData.title
         setTimeout(function() {
           $("#edit-modal-btn").prop("checked", true);
           autosize.update($("textarea"))
@@ -461,6 +463,7 @@ vueKanbanInit = function(conn, boardData) {
   $("#edit-modal-btn").change(function() {
     if ($(this).prop("checked") == false) {
       window.location.hash = ""
+      document.title = app.pageTitle
     }
   })
   return app
