@@ -1,4 +1,5 @@
 body{font-family: "Lato"; margin:0; padding: 0;}
+textarea{resize: vertical;}
 #myKanban{padding:20px 0;}
 .success{background: #00B961;}
 .info{background: #2A92BF;}
@@ -75,13 +76,19 @@ body{font-family: "Lato"; margin:0; padding: 0;}
 .kanban-wall-name, .kanban-board-title, .kanban-card-title, .kanban-add{
   cursor: pointer;
 }
-.kanban-card-task-form{
-  width: 90%;
-  margin: auto;
-}
 .kanban-checklist-item-container{
   width: 90%;
   margin: auto;
   padding: 15px 20px;
   border-bottom: .75px solid #333;
+}
+.btn-outline{
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 250px;
+}
+.btn-outline:hover{
+  background-color: #ddd;
+  border: 1px solid black;
 }

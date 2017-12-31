@@ -112,8 +112,9 @@ vueEditInit = function(conn) {
         })
 
         function submitCardChecklist(el) {
-          app.addChecklistItem($(el).val());
-          $(el).val("")
+          textarea = $(el).parent().children("textarea").first()
+          app.addChecklistItem(textarea.val());
+          textarea.val("")
         }
         //Task creation
         $(".kanban-card-task-form textarea").off("keydown").keydown(function(e) {
@@ -124,6 +125,10 @@ vueEditInit = function(conn) {
             submitCardChecklist(this)
           }
         })
+        $(".kanban-card-task-form button").off("click").click(function() {
+          submitCardChecklist(this)
+        })
+        //Checking off items
         $(".kanban-checklist-item input").off("click").click(function() {
           taskID = $(this).parent().parent().attr("data-eid")
           app.updateChecklistItem(taskID, $(this).prop("checked"));
