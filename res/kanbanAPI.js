@@ -2,7 +2,7 @@ $(function() {
   var KanbanTest
   var initialized = 0;
   var conn;
-  console.log("AccountID:", urlAccountID, "WallID:", urlWallID)
+  console.log("AccountID:", urlAccountID, "\nWallID:", urlWallID)
 
   function startSocket(startCallback, msgCallback) {
     if (window["WebSocket"]) {
@@ -50,8 +50,6 @@ $(function() {
       }
       if (msgsplit[0] == "addBoard") {
         newBoard = JSON.parse(msgsplit[1])
-        console.log("Brd:", newBoard)
-        console.log(app.boardList)
         app.addBoard(newBoard.ID, newBoard.Name)
       }
       if (msgsplit[0] == "addWall") {
@@ -60,29 +58,22 @@ $(function() {
       }
       if (msgsplit[0] == "changeWallName") {
         newWall = JSON.parse(msgsplit[1])
-        console.log("Change Wall Name:", newWall)
-        console.log(app.boardList)
         app.changeWallName(newWall.WallID, newWall.Name)
       }
       if (msgsplit[0] == "changeBoardName") {
         newBoard = JSON.parse(msgsplit[1])
-        console.log("Change Board Name:", newBoard)
-        console.log(app.boardList)
         app.changeBoardName(newBoard.BoardID, newBoard.Name)
       }
       if (msgsplit[0] == "changeCardTitle") {
         newCard = JSON.parse(msgsplit[1])
-        console.log("Change Card Title:", newCard)
         app.changeCardTitle(newCard.BoardID, newCard.CardID, newCard.Title)
       }
       if (msgsplit[0] == "changeCardDetails") {
         newCard = JSON.parse(msgsplit[1])
-        console.log("Change Card Details:", newCard)
         app.changeCardDetails(newCard.BoardID, newCard.CardID, newCard.Details)
       }
       if (msgsplit[0] == "moveCard") {
         moveData = JSON.parse(msgsplit[1])
-        console.log("Move Card:", moveData)
         if (moveData.OriginBoardID != moveData.DestBoardID) {
           app.moveCardBoard(moveData.CardID, moveData.OriginBoardID, moveData.DestBoardID)
         }

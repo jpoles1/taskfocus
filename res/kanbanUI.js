@@ -3,7 +3,7 @@ var currentModalCardID //string containing ID of current card in editing pane
 vueKanbanInit = function(conn, boardData) {
   var drake, drakeBoard
   var boardData = Object.values(JSON.parse(boardData))
-  console.log("Populating Data:", boardData)
+  //console.log("Populating Data:", boardData)
   vueEditApp = vueEditInit(conn);
 
   function showError(errmsg) {
@@ -92,7 +92,6 @@ vueKanbanInit = function(conn, boardData) {
         setTimeout(this.refreshDrag, 200)
       },
       changeWallName: function(wallID, name) {
-        console.log("WALLSET to ", name)
         this.wallName = name;
       },
       changeBoardName: function(boardID, name) {
@@ -118,7 +117,6 @@ vueKanbanInit = function(conn, boardData) {
         setTimeout(this.refreshEvents, 200)
       },
       moveCardBoard: function(cardID, originBoardID, destBoardID) {
-        console.log("moving board:", this.boardList[parseInt(originBoardID)].item[cardID])
         Vue.set(this.boardList[parseInt(destBoardID)]["item"], cardID, this.boardList[parseInt(originBoardID)].item[cardID])
         Vue.delete(this.boardList[parseInt(originBoardID)].item, cardID)
         //Change Card from one board to another
@@ -160,7 +158,6 @@ vueKanbanInit = function(conn, boardData) {
         setTimeout(vueEditApp.refreshEvents, 200)
       },
       deleteChecklistItem: function(boardID, cardID, taskID) {
-        console.log("deleting")
         Vue.delete(this.boardList[boardID].item[cardID].tasks, taskID)
         if (cardID == currentModalCardID) {
           Vue.delete(vueEditApp.tasks, taskID)
@@ -180,7 +177,6 @@ vueKanbanInit = function(conn, boardData) {
         })
         //Closes the current form
         $(".cancel").off("click").click(function() {
-          console.log("cancel")
           $(this).parent().parent().children().show()
           $(this).parent().hide()
           $(this).siblings("input,textarea").each(function() {
@@ -225,7 +221,6 @@ vueKanbanInit = function(conn, boardData) {
             showError("Cannot set wall to blank name.")
             return
           }
-          console.log("Changing Wall Name")
           conn.send("changeWallName ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             Name: name
@@ -255,7 +250,6 @@ vueKanbanInit = function(conn, boardData) {
             showError("Cannot create blank card.")
             return
           }
-          console.log("ADD")
           contObj = $(el).parents().eq(2)
           boardID = contObj.attr("data-id")
           conn.send("addCard ~ ~ " + JSON.stringify({
@@ -285,7 +279,6 @@ vueKanbanInit = function(conn, boardData) {
             showError("Cannot create board with no name.")
             return
           }
-          console.log("Adding new board")
           conn.send("addBoard ~ ~ " + JSON.stringify({
             WallID: urlWallID,
             Name: name
@@ -313,9 +306,7 @@ vueKanbanInit = function(conn, boardData) {
             return
           }
           contObj = $(el).parents().eq(2)
-          console.log(contObj)
           boardID = contObj.attr("data-id")
-          console.log("Changing title")
           $(el).parent().parent().children().show()
           $(el).parent().hide()
           conn.send("changeBoardName ~ ~ " + JSON.stringify({
@@ -342,10 +333,8 @@ vueKanbanInit = function(conn, boardData) {
         function submitCardTitleForm(el) {
           title = $(el).parent().children("textarea").first().val()
           contObj = $(el).parents().eq(3)
-          console.log(contObj)
           boardID = contObj.attr("data-id")
           cardID = $(el).parent().parent().attr("data-eid")
-          console.log("Changing title")
           $(el).parent().parent().children().show()
           $(el).parent().hide()
           if ($.trim(title) == "") {
@@ -382,7 +371,6 @@ vueKanbanInit = function(conn, boardData) {
         })
         drake.on('drag', function(el, source) {
           el.classList.add('is-moving');
-          //console.log("Drag", el, $(source).parent().attr("data-id"))
         })
         drake.on('drop', function(el, target, source, sibling) {
           el.classList.remove('is-moving');
@@ -398,7 +386,6 @@ vueKanbanInit = function(conn, boardData) {
             OrderBefore: parseInt($(el).prev().attr("data-order")),
             OrderAfter: parseInt($(el).next().attr("data-order"))
           }
-          console.log(sendObj)
           if (isNaN(sendObj.OrderAfter)) {
             sendObj.OrderBefore += 1
             sendObj.OrderAfter = sendObj.OrderBefore + 2
@@ -454,7 +441,6 @@ vueKanbanInit = function(conn, boardData) {
   var hash = window.location.hash;
   if (hash.length > 0) {
     hash = hash.split("#")[1]
-    console.log("Hash:", hash)
     hashsplit = hash.split(",")
     if (hashsplit.length == 2) {
       app.startEdit(hashsplit[0], hashsplit[1])

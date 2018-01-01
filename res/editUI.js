@@ -10,7 +10,6 @@ vueEditInit = function(conn) {
     },
     computed: {
       orderedTasks: function() {
-        console.log(this.tasks)
         return Object.values(this.tasks).sort(function(a, b) {
           if (a.checked != b.checked) {
             return a.checked
