@@ -6,7 +6,7 @@ $(function() {
 
   function startSocket(startCallback, msgCallback) {
     if (window["WebSocket"]) {
-      conn = new WebSocket("ws://" + document.location.host + "/ws/" + urlWallID);
+      conn = new ReconnectingWebSocket("ws://" + document.location.host + "/ws/" + urlWallID);
       conn.onopen = function() {
         startCallback(conn)
       }

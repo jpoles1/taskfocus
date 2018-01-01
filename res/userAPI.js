@@ -1,7 +1,7 @@
 $(function() {
   var conn;
   if (window["WebSocket"]) {
-    conn = new WebSocket("ws://" + document.location.host + "/ws");
+    conn = new ReconnectingWebSocket("ws://" + document.location.host + "/ws");
     conn.onopen = function() {}
     conn.onclose = function(evt) {
       console.log("Connection Lost")
